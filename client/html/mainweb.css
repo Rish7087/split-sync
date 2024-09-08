@@ -1,0 +1,100 @@
+.web-head
+{
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    right: 0%;
+    bottom: 0%;
+    background-color: grey;
+}
+.heading
+{
+    display: flex;
+    align-items: center;
+    align-content: space-evenly;
+    justify-content: space-evenly;
+    position:fixed;
+    left: 36rem;
+    top: 5vh;
+
+}
+.Roommates
+{
+position: relative;
+left: -8rem;
+bottom: -1.7rem;
+color: #f4ebd0;
+}
+.l1
+{
+    position: relative;
+    right: 15rem;
+    bottom: -3.5rem;
+}
+.l2
+{
+    position: relative;
+    left: -1rem;
+    bottom: -0.25rem;
+}
+.logo
+{
+    color: #d6ad60;
+    font-weight: 200;
+}
+.logo2
+{
+    color: #f4ebd0;
+}
+.your-split-buddies
+{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    height:100vh;
+    width: 20%;
+    background-color: rgb(17, 27, 27);
+}
+.heading2
+{
+display: flex;
+justify-content: center;
+flex-direction: row;
+color: goldenrod;
+}
+
+.buddies
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    justify-content:space-evenly;
+    position: relative;
+    height: 80%;
+    width: 90%;
+    margin: 10px;
+    left: 3px;
+    
+}
+.groups
+{
+    height: 5rem;
+    width: 5rem;
+    border-radius: 50%;
+    position: relative;
+    left: 4rem;
+    transition: all 100ms;
+}
+.groups img
+{
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+}
+.groups:hover
+{
+    transform: scale(1.1);
+    box-shadow: 1px 1px 30px 1px tan;
+}
+
