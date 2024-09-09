@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require('cors');
 const expenseRoutes = require('./routes/expenses');
+const userRoutes = require('./routes/user');
 
 const mongo_URI = "mongodb://localhost:27017/split-buddies";
 const PORT = 8080;
@@ -22,7 +23,8 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 // Routes
-app.use('/api/expenses', expenseRoutes);
+app.use('/expenses', expenseRoutes);
+app.use('/user', userRoutes);
 
 
 app.get("/", (req,res)=> {
