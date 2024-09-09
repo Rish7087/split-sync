@@ -6,12 +6,9 @@ const CardContainer = ({ profiles, onProfileSelect }) => {
   return (
     <div className="container">
       {profiles.map((profile) => (
-        <div key={profile._id} onClick={() => onProfileSelect(profile._id)}>
+        <div key={profile._id} onClick={() => onProfileSelect(profile._id, profile.name)}>
           <Card 
-            destination={profile.name} 
-            imageClass="" 
-            outPrice="" 
-            rtnPrice="" 
+            name={profile.name} 
             profilePic={profile.profilePic}
           />
         </div>

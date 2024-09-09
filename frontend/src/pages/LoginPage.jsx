@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setCookie } from '../utils/cookieUtils'; // Adjust the import path
 import './LoginPage.css';
@@ -6,7 +6,14 @@ import './LoginPage.css';
 export default function LoginPage() {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
+
+  // Fetch the selected profile name from localStorage and set it in state
+  useEffect(() => {
+    const selectedProfileName = localStorage.getItem('selectedProfileName');
+    setUserName(selectedProfileName);
+  }, []);
 
   const handleLogin = () => {
     const selectedProfile = localStorage.getItem('selectedProfile');
@@ -32,7 +39,8 @@ export default function LoginPage() {
 
   return (
     <div className='main'>
-      <h1 className='heading'>Enter your 4-digit PIN</h1>
+      <h1 className='heading'>Welcome {userName} !</h1>
+      <h2 className='subheading'>Enter your 4-digit PIN</h2>
       <input
         className='pin'
         type="password"
