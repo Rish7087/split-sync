@@ -6,13 +6,14 @@
     right: 0%;
     bottom: 0%;
     background-color: rgb(0, 0, 0);
+    
 }
 .logo
 {
     display: flex;
     justify-content: center;
     flex-direction: row;
-    height: 8rem;
+    height: 5rem;
     width: 100%;
 }
 .your-split-buddies
@@ -41,22 +42,15 @@ color: goldenrod;
 {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    justify-content:space-evenly;
-    position: relative;
+    justify-content: space-evenly;
+    align-items: center;
     height: 80%;
-    width: 90%;
-    margin: 10px;
-    left: 3px;
-    
 }
 .groups
 {
     height: 5rem;
     width: 5rem;
     border-radius: 50%;
-    position: relative;
-    left: 4rem;
     transition: all 100ms;
 }
 .groups img
@@ -97,3 +91,82 @@ color: goldenrod;
     width: 100%;
     border-radius: 50%;
 }
+.tablepie
+{
+   background-color: rgb(0, 0, 0);
+   height: 25rem;
+   width: 50%;
+   position: absolute;
+   right: 30%;
+   bottom: 0%;
+}
+.pie
+{
+    
+}
+.table
+{
+    display: flex;
+    justify-content: center;
+}
+table.content {
+    border-collapse: separate;
+    border-spacing: 0 15px; 
+    width: 100%;
+    color: aquamarine;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th:first-child, td:first-child {
+    width: 10%; 
+    text-align: center;
+  }
+  
+  .total-price td {
+    border-top: 2px solid #ffffff;
+    border-bottom: none;
+    text-align: center;
+   }
+   .pie {
+    position: absolute;
+    border-radius: 50%;
+    overflow: hidden;
+    height: 25rem;
+    width: 30%;
+    background-color: rgb(0, 0, 0);
+    right: 0%;
+    bottom: 0%;
+  }
+  
+  .pieinside {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    clip: rect(0px, 100px, 200px, 0px); /* Create a clipping rectangle */
+    border-radius: 50%;
+  }
+  
+  .slice1 {
+    background-color: #f00;
+    transform: rotate(0deg);
+  }
+  
+  .slice2 {
+    background-color: #0f0;
+    transform: rotate(90deg);
+  }
+  
+  .slice3 {
+    background-color: #00f;
+    transform: rotate(180deg);
+  }
+  
+  .slice4 {
+    background-color: #ff0;
+    transform: rotate(270deg);
+  }
