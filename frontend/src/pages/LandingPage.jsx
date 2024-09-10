@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './LandingPage.css';
-import user1Img from '../assets/image1.png';
-import user2Img from '../assets/image2.png';
-import user3Img from '../assets/image3.png';
-import user4Img from '../assets/image4.png';
+import user1Img from '../assets/user1.jpeg';
+import user2Img from '../assets/user2.jpeg';
+import user3Img from '../assets/user3.jpeg';
+import user4Img from '../assets/user4.jpeg';
 import CardContainer from '../components/CardContainer';
 
 export default function LandingPage() {
@@ -21,20 +21,25 @@ export default function LandingPage() {
           profilePic: images[index] || '/default-image.png',
         }));
         setProfiles(fixedProfiles);
+        console.log(fixedProfiles);
       })
       .catch((error) => console.error('Error fetching profiles:', error));
   }, []);
 
-  const handleProfileSelect = (id) => {
+  const handleProfileSelect = (id, name) => {
     localStorage.setItem('selectedProfile', id);
+    localStorage.setItem('selectedProfileName', name);
     navigate('/login');
   };
 
   return (
     <div>
-      <h1 className="heading">Select Your Profile</h1>
+      <h1 className="heading">Who's this?</h1>
       <div className="card-cont">
-        <CardContainer profiles={profiles} onProfileSelect={handleProfileSelect} />
+        <CardContainer 
+          profiles={profiles} 
+          onProfileSelect={(id, name) => handleProfileSelect(id, name)} 
+        />
       </div>
     </div>
   );

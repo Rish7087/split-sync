@@ -1,49 +1,37 @@
 body {
   margin: 0;
-  background-color: #2e2e31;
-  display: flex;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
+  background-color: #1c1c1e;
+
 }
 
 .container {
-  height: 100vh;
-  width: 100vw;
-  max-height: 600px;
-  max-width: 1200px;
-  min-height: 600px;
-  min-width: 1100px;
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
   align-items: center;
-  margin: 0 auto;
+  width: 99%;
 }
 
 .panel {
-  height: 270px;
-  width: 190px;
+  height: 50vh;
   position: relative;
 }
 
 .panel:hover .card {
-  filter: blur(1.5px);
+  filter: blur(1.2px);
 }
-
-.panel:hover .card1 {
-  background-size: 215% 135%;
-}
-
-.panel:hover .card2 {
-  background-size: 115% 115%;
-}
-
-.panel:hover .card3 {
-  background-size: 155% 115%;
+.title {
+  font-size: 2rem;
+  font-weight: 900;
+  transition: all 1s;
+  top: 0;
+  opacity: 0;
 }
 
 .panel:hover .title {
-  color: rgba(255, 255, 255, 0.2);
+  opacity: 1;
+  color: rgb(255, 255, 255);
+  background-color: #00000038;
 }
 
 .panel:hover .border {
@@ -82,9 +70,13 @@ body {
   background: #f0ead6;
   position: relative;
   transition: all 1s;
-  height: 270px;
-  width: 190px;
+  height: 12rem;
+  width: 8rem;
   border: 1px solid rgba(255, 255, 255, 1);
+}
+.card img{
+  height: 12rem;
+  width: 8rem;
 }
 
 .ring:before,
@@ -93,7 +85,7 @@ body {
   padding: 0.7em 0.4em;
   position: absolute;
   left: 50%;
-  width: 115%;
+  width: 15%;
   top: 50%;
   display: block;
   border: 5px solid #50c9c3;
@@ -117,42 +109,17 @@ p {
   font-family: "Playfair Display";
 }
 
-.title {
-  font-size: 36px;
-  font-weight: 700;
-  transition: all 1s;
-  top: 0;
-}
-
-.para {
-  bottom: 0;
-  font-size: 16px;
-  font-family: "Raleway";
-  padding: 20px;
-  margin: 0;
-  text-align: center;
-}
-
 .border {
   position: absolute;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  height: 260px;
-  width: 180px;
+  height: 13rem;
+  width: 9rem;
   transition: border 1s;
   overflow: hidden;
 }
 
-.slide {
-  height: 260px;
-  width: 180px;
-  position: absolute;
-  border: 1px solid black;
-  bottom: -270px;
-  background: rgba(0, 0, 0, 0.5);
-  transition: bottom 1s;
-  flex-direction: column;
-}
-
-.fa-plane {
-  font-size: 16px;
+@media (max-width: 800px) {
+  .container {
+    flex-direction: column;
+  }
 }

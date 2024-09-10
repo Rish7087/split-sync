@@ -1,0 +1,12 @@
+/* Define primary and secondary colors globally */
+:root {
+    --primary-color: #31363F; 
+    --secondary-color: #76ABAE; 
+    --background-color: #222831; 
+    --text-color: #EEEEEE;
+  }
+
+  body{
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }

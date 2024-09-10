@@ -1,15 +1,15 @@
 import React from 'react';
 import './Card.css';
 
-const Card = ({ destination, profilePic }) => {
+const Card = ({ name, profilePic }) => {
   return (
     <div className="panel">
       <div className="ring">
         <div className="card">
-          <img src={profilePic} alt={destination} className="profile-pic" />
+          <img src={profilePic} alt={name} className="profile-pic" />
         </div>
         <div className="border">
-          <p className="title">{destination}</p>
+          <p className="title">{name}</p>
         </div>
       </div>
     </div>
