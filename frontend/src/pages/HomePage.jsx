@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getUserFromCookie } from '../utils/cookieUtils'; // Adjust the import path
+import user1Img from '../assets/user1.jpeg';
+import user2Img from '../assets/user2.jpeg';
+import user3Img from '../assets/user3.jpeg';
+import user4Img from '../assets/user4.jpeg';
+import './HomePage.css';
 
 const HomePage = () => {
   const [userData, setUserData] = useState(null);
   const [allExpenses, setAllExpenses] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
+
+  // Mapping user IDs to their images and names
+  const userProfiles = {
+    '66ddafd07489b1709fdbbbe9': { name: 'Rishabh', img: user1Img },
+    '66ddafd07489b1709fdbbbea': { name: 'Utkarsh', img: user2Img },
+    '66ddafd07489b1709fdbbbeb': { name: 'Krishna', img: user3Img },
+    '66ddafd07489b1709fdbbbec': { name: 'Lakshay', img: user4Img },
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,7 +52,7 @@ const HomePage = () => {
       <div className="user-info">
         {userData && (
           <>
-            <img src={userData.profilePic || 'default-profile-pic.jpg'} alt={userData.name} className="profile-pic" />
+            <img src={userProfiles[userData._id]?.img || 'default-profile-pic.jpg'} alt={userData.name} className="profile-pic" />
             <h1>{userData.name}</h1>
             <p>Total Expenses: ${userData.totalSpent.toFixed(2)}</p>
           </>
@@ -59,11 +72,18 @@ const HomePage = () => {
           </thead>
           <tbody>
             {Array.isArray(allExpenses) && allExpenses.length > 0 ? (
-              allExpenses.map(expense => (
+              allExpenses.map((expense) => (
                 <tr key={expense._id}>
                   <td>{expense.title}</td>
                   <td>${expense.total.toFixed(2)}</td>
-                  <td>{expense.paidBy}</td>
+                  <td>
+                    <img
+                      src={userProfiles[expense.paidBy]?.img || 'default-profile-pic.jpg'}
+                      alt={userProfiles[expense.paidBy]?.name || 'Unknown'}
+                      className="small-profile-pic"
+                    />{' '}
+                    {userProfiles[expense.paidBy]?.name || 'Unknown'}
+                  </td>
                   <td>{new Date(expense.date).toLocaleDateString()}</td>
                 </tr>
               ))

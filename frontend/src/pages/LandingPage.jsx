@@ -21,6 +21,7 @@ export default function LandingPage() {
           profilePic: images[index] || '/default-image.png',
         }));
         setProfiles(fixedProfiles);
+        console.log(fixedProfiles);
       })
       .catch((error) => console.error('Error fetching profiles:', error));
   }, []);
