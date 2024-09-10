@@ -57,7 +57,7 @@ const HomePage = () => {
             <img
               src={userProfiles[userData._id]?.img || "default-profile-pic.jpg"}
               alt={userData.name}
-              className="profile-pic"
+              className="userprofile-pic"
             />
             <div className="about">
               <h1>{userData.name}</h1>
@@ -69,7 +69,7 @@ const HomePage = () => {
         )}
       </>
 
-      <div className="panel">
+      <div className="homepanel">
         <div className="groupCon">
           <h3>Groups</h3>
           <div className="group"></div>

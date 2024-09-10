@@ -8,10 +8,11 @@
   margin-bottom: 20px;
   
 }
-.profile-pic{
+.userprofile-pic{
   height: 8rem;
   width: 8rem;
   margin-right: 2rem;
+  border-radius: 50%;
 }
 .about{
   display: flex;
@@ -21,12 +22,12 @@
 .about h1,p{
   margin: 0;
 }
-img{
+.homepanel img{
   width: 1rem;
   border-radius: 50%;
 }
 
-.panel{
+.homepanel{
   display: flex;
   align-items: center;
   justify-content: space-evenly;
