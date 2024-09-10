@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PinInput from 'react-pin-input';
 import { setCookie } from '../utils/cookieUtils'; // Adjust the import path
 import './LoginPage.css';
 
@@ -9,7 +10,6 @@ export default function LoginPage() {
   const [userName, setUserName] = useState('');
   const navigate = useNavigate();
 
-  // Fetch the selected profile name from localStorage and set it in state
   useEffect(() => {
     const selectedProfileName = localStorage.getItem('selectedProfileName');
     setUserName(selectedProfileName);
@@ -39,15 +39,21 @@ export default function LoginPage() {
 
   return (
     <div className='main'>
-      <h1 className='heading'>Welcome {userName} !</h1>
+      <h1 className='heading'>Welcome {userName}!</h1>
       <h2 className='subheading'>Enter your 4-digit PIN</h2>
-      <input
-        className='pin'
-        type="password"
-        maxLength="4"
-        value={pin}
-        onChange={(e) => setPin(e.target.value)}
+
+      <PinInput
+        length={4}
+        initialValue=""
+        secret
+        secretDelay={500} // Delay to show the typed digit before masking it
+        onChange={(value) => setPin(value)}
+        onComplete={(value) => setPin(value)}
+        type="numeric"
+        inputStyle={{ borderColor: 'gray', borderRadius: '4px', width: '40px', height: '40px' }}
+        inputFocusStyle={{ borderColor: 'blue' }}
       />
+      
       {error && <p>{error}</p>}
       <button className='login' onClick={handleLogin}>Login</button>
     </div>
