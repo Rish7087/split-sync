@@ -57,6 +57,7 @@ exports.getUserData = async (req, res) => {
     const totalExpenses = expenses.reduce((total, expense) => total + expense.total, 0);
 
     res.status(200).json({
+      _id: userId,
       name: user.name,
       totalSpent: totalExpenses,
       expenses: expenses
