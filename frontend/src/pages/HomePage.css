@@ -6,7 +6,8 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  
+  /* background-color: antiquewhite; */
+  margin: 2rem 2rem;
 }
 .userprofile-pic{
   height: 8rem;
@@ -28,10 +29,12 @@
 }
 
 .homepanel{
+  height: 50vh;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   background-color: var(--primary-color);
+  padding-bottom: 2rem;
 }
 .groupCon{
   /* background-color: var(--secondary-color); */

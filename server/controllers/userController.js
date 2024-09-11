@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const Expense = require('../models/expenses');
+const Expense = require('../models/expense');
 
 // Fetch all users
 exports.fetchAll = async (req, res) => {

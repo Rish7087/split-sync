@@ -1,25 +1,23 @@
-const Expense = require('../models/expenses'); // Ensure this is your Expense model
+const Expense = require('../models/expense'); // Ensure this is your Expense model
 const User = require('../models/user'); // Ensure this is your User model
 
 // Controller to add an expense
 exports.addExpense = async (req, res) => {
+  console.log("add expense req recieved");
   try {
-    const { items, total, paidBy } = req.body;
-
-    // Create a new expense
+    console.log("trying to add expense");
+    const { title, total, paidBy, items, note } = req.body;
+     console.log(req.body);
     const newExpense = new Expense({
-      items,
+      title,
       total,
-      paidBy
+      paidBy,
+      items,
+      note,
     });
 
-    // Save the expense
     const savedExpense = await newExpense.save();
-
-    res.status(201).json({
-      message: 'Expense added successfully!',
-      expense: savedExpense
-    });
+    res.status(201).json({ message: 'Expense added successfully', expense: savedExpense });
   } catch (error) {
     res.status(500).json({ error: 'Error adding expense', details: error.message });
   }
