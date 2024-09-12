@@ -222,29 +222,41 @@ const HomePage = () => {
                       </TableCell>
                     </TableRow>
                     {viewItemsFor === expense._id && (
-                      <TableRow>
-                        <TableCell colSpan={5}>
-                          <Table size="small" aria-label="items table">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>Item Name</TableCell>
-                                <TableCell>Price</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {expense.items.map((item, index) => (
-                                <TableRow key={index}>
-                                  <TableCell>{item.name}</TableCell>
-                                  <TableCell>
-                                    ₹{item.price.toFixed(2)}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TableCell>
-                      </TableRow>
-                    )}
+  <TableRow>
+    <TableCell colSpan={5}>
+      <Table size="small" aria-label="items table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Item Name</TableCell>
+            <TableCell>Price</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {expense.items.map((item, index) => (
+            <TableRow key={index}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>₹{item.price.toFixed(2)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* Note Row */}
+      <Table size="small" aria-label="note table" sx={{ marginTop: '10px' }}>
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={2}>
+              <Typography variant="body2" component="div">
+                <strong>Note:</strong> {expense.note ? expense.note : "No note added"}
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableCell>
+  </TableRow>
+)}
+
                   </React.Fragment>
                 ))
               ) : (
