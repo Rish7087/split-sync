@@ -11,8 +11,8 @@ const upload = multer({ storage });
 require('dotenv').config();  // Add this at the top of your main server file (app.js, server.js, etc.)
 
 // const mongo_URI = "mongodb://localhost:27017/split-buddies";
-const mongo_URI = "mongodb+srv://rishabhsaini40618:Mxy%407087@cluster0.uhyzl.mongodb.net/split-buddies?retryWrites=true&w=majority&appName=Cluster0";
-const PORT = 8080;
+const mongo_URI = process.env.MONGO_URI;
+const PORT = process.env.PORT;
 
 main().then(()=>{
     console.log("Connected to Database !");
