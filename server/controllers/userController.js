@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const Expense = require('../models/expense');
-
+const {cloudinary} = require("../cloudConfig")
 // Fetch all users
 exports.fetchAll = async (req, res) => {
   try {
@@ -66,5 +66,37 @@ exports.getUserData = async (req, res) => {
   } catch (error) {
     console.error('Error fetching user data and expenses:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+exports.updateUser = async (req, res) => {
+  const userId = req.params.id;
+  const updates = req.body; // This contains name and other updates
+
+  try {
+    // Check if there's an uploaded file (profilePic)
+    if (req.file) {
+      // req.file.path contains the Cloudinary URL
+      updates.profilePic = req.file.path;
+    }
+
+    // Update the user in the database with the new info
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, {
+      new: true, // Return the updated document
+      runValidators: true, // Run model validators
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'User updated successfully',
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Failed to update user' });
   }
 };
