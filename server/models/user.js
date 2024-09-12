@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   name: String,
-  pin: String,  // Ensure this is defined as a String
+  pin: String, 
   profilePic: String,
   totalSpent: Number,
   // Other fields...

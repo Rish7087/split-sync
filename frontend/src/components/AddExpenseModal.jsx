@@ -1,117 +1,179 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getUserFromCookie } from '../utils/cookieUtils'; // Importing the utility
-import './AddExpenseModal.css';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { getUserFromCookie } from '../utils/cookieUtils'; // Utility function for fetching user
 
-const AddExpenseModal = ({ onClose, refreshExpenses }) => {
+const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
   const [title, setTitle] = useState('');
-  const [total, setTotal] = useState('');
   const [items, setItems] = useState([{ name: '', price: '' }]);
   const [note, setNote] = useState('');
+  const [total, setTotal] = useState(0); // Initialize total state
+  const [loading, setLoading] = useState(false);
 
-  // Handler to add a new item input
+  // Fetch items for autocomplete suggestions asynchronously
+  const fetchItemOptions = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('http://localhost:8080/items'); // Update to correct API for fetching items
+      // Note: itemOptions is no longer used in this simplified version
+    } catch (error) {
+      console.error('Error fetching item options:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load item options on open
+  useEffect(() => {
+    if (open) {
+      fetchItemOptions();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    // Calculate total whenever items change
+    const newTotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+    setTotal(newTotal);
+  }, [items]);
+
   const handleAddItem = () => {
     setItems([...items, { name: '', price: '' }]);
   };
 
-  // Handler for changing item details
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
     setItems(updatedItems);
   };
 
-  // Handle form submission
+  const handleRemoveItem = (index) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+    setItems(updatedItems);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate title, total, and item prices
+    if (!title.trim()) {
+      alert('Title is required');
+      return;
+    }
+    if (total <= 0) {
+      alert('Total must be a positive number');
+      return;
+    }
+    if (items.some(item => !item.name.trim() || isNaN(parseFloat(item.price)) || parseFloat(item.price) <= 0)) {
+      alert('All items must have a name and a positive price');
+      return;
+    }
+
     try {
-      const user = getUserFromCookie('currentUser'); // Fetch the current user
-      const paidBy = user._id; // Extract the user ID (paidBy)
+      const user = getUserFromCookie('currentUser');
+      const paidBy = user._id;
 
       const expenseData = {
         title,
-        total: parseFloat(total),
-        paidBy, // Set the current user as the one who paid
+        total,
+        paidBy,
         items: items.map((item) => ({
           name: item.name,
           price: parseFloat(item.price),
-        })), // Keep the items as an array of objects
+        })),
         note,
       };
 
-      await axios.post('http://localhost:8080/expenses/add', expenseData); // Send expense data to the backend
-      refreshExpenses(); // Refresh the expense list after adding a new expense
-      onClose(); // Close the modal
+      console.log('Submitting expense data:', expenseData); // Debug log
+
+      await axios.post('http://localhost:8080/expenses/add', expenseData);
+      refreshExpenses();
+      onClose();
     } catch (error) {
       console.error('Error adding expense:', error);
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Add Expense</h2>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Add Expense</DialogTitle>
+      <DialogContent sx={{ color: "var(--text-color)" }}>
         <form onSubmit={handleSubmit}>
-          <div>
-            <label>Title:</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
+          <TextField
+            label="Title"
+            fullWidth
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            margin="normal"
+          />
+          {items.map((item, index) => (
+            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+              <TextField
+                label="Item Name"
+                value={item.name}
+                onChange={(e) => handleItemChange(index, 'name', e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Price"
+                type="number"
+                value={item.price}
+                onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                fullWidth
+                margin="normal"
+                style={{ marginLeft: '1rem' }}
+                required
+                inputProps={{ min: 0 }}
+              />
+              <Button
+                type="button"
+                onClick={() => handleRemoveItem(index)}
+                startIcon={<DeleteIcon />}
+                variant="outlined"
+                color="error"
+                style={{ marginLeft: '1rem' }}
+              >
+                Delete
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            onClick={handleAddItem}
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+          >
+            Add Another Item
+          </Button>
+          <TextField
+            label="Note (optional)"
+            fullWidth
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            multiline
+            rows={3}
+            margin="normal"
+          />
+          <div style={{ marginTop: '1rem' }}>
+            <Typography variant="h6">
+              Total: ₹{total.toFixed(2)}
+            </Typography>
           </div>
-          <div>
-            <label>Total:</label>
-            <input
-              type="number"
-              value={total}
-              onChange={(e) => setTotal(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Items:</label>
-            {items.map((item, index) => (
-              <div key={index}>
-                <input
-                  type="text"
-                  placeholder="Item name"
-                  value={item.name}
-                  onChange={(e) =>
-                    handleItemChange(index, 'name', e.target.value)
-                  }
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Price"
-                  value={item.price}
-                  onChange={(e) =>
-                    handleItemChange(index, 'price', e.target.value)
-                  }
-                  required
-                />
-              </div>
-            ))}
-            <button type="button" onClick={handleAddItem}>
-              Add Another Item
-            </button>
-          </div>
-          <div>
-            <label>Note (optional):</label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            ></textarea>
-          </div>
-          <button type="submit">Submit</button>
-          <button type="button" onClick={onClose}>
-            Close
-          </button>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          Close
+        </Button>
+        <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 const expenseRoutes = require('./routes/expenses');
 const userRoutes = require('./routes/user');
+const itemRoutes = require('./models/item');
 
 const mongo_URI = "mongodb://localhost:27017/split-buddies";
 const PORT = 8080;
@@ -25,7 +26,7 @@ app.use(express.json());
 // Routes
 app.use('/expenses', expenseRoutes);
 app.use('/user', userRoutes);
-
+app.use('/items', itemRoutes); 
 
 app.get("/", (req,res)=> {
     res.send("Welcome to split buddies");

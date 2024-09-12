@@ -1,7 +1,6 @@
-// initDB.js
 const mongoose = require('mongoose');
 const User = require('./models/user');
-const Expense = require('./models/expenses');
+const Expense = require('./models/expense');
 
 const mongo_URI = "mongodb://localhost:27017/split-buddies";
 
@@ -21,40 +20,59 @@ async function seedDatabase() {
     await User.deleteMany({});
     await Expense.deleteMany({});
 
-    // Create new users
+    // Create new users with profile picture URLs
     const users = await User.insertMany([
-      { name: 'Rishabh', pin: '0001' },
-      { name: 'Utkarsh', pin: '0002' },
-      { name: 'Krishna', pin: '0003' },
-      { name: 'Lakshay', pin: '0004' }
+      { name: 'Rishabh', pin: '0001', totalSpent: 0, profilePic: '../assets/user1.jpeg' },
+      { name: 'Utkarsh', pin: '0002', totalSpent: 0, profilePic: '../assets/user2.jpeg' },
+      { name: 'Krishna', pin: '0003', totalSpent: 0, profilePic: '../assets/user3.jpeg' },
+      { name: 'Lakshay', pin: '0004', totalSpent: 0, profilePic: '../assets/user4.jpeg' }
     ]);
 
     console.log('Users created:', users);
 
     // Create new expenses
     const expenses = await Expense.insertMany([
-        { title: 'Dinner', item: 'Pizza', total: 20.00, paidBy: users[0]._id },
-        { title: 'Groceries', item: 'Milk, Bread', total: 15.50, paidBy: users[1]._id },
-        { title: 'Transport', item: 'Taxi', total: 8.00, paidBy: users[2]._id }
-      ]);
-      
+      {
+        title: 'Dinner',
+        total: 20.00,
+        paidBy: users[0]._id,
+        items: [
+          { name: 'Pizza', price: 20.00 }
+        ],
+        note: 'Dinner for everyone',
+        date: new Date()
+      },
+      {
+        title: 'Groceries',
+        total: 15.50,
+        paidBy: users[1]._id,
+        items: [
+          { name: 'Milk', price: 1.50 },
+          { name: 'Bread', price: 2.00 }
+        ],
+        note: 'Weekly groceries',
+        date: new Date()
+      },
+      {
+        title: 'Transport',
+        total: 8.00,
+        paidBy: users[2]._id,
+        items: [
+          { name: 'Taxi', price: 8.00 }
+        ],
+        note: 'Taxi fare',
+        date: new Date()
+      }
+    ]);
 
     console.log('Expenses created:', expenses);
 
-    // Assign expenses to users
-    users[0].expenses.push(expenses[0]._id);
-    users[1].expenses.push(expenses[1]._id);
-    users[2].expenses.push(expenses[2]._id);
-
-    // Update the totalSpent for each user
-    users[0].totalSpent = expenses[0].price;
-    users[1].totalSpent = expenses[1].price;
-    users[2].totalSpent = expenses[2].price;
-
-    // Save the users with updated expenses and totalSpent
-    await users[0].save();
-    await users[1].save();
-    await users[2].save();
+    // Update users' totalSpent and link expenses
+    for (const user of users) {
+      const userExpenses = expenses.filter(expense => expense.paidBy.equals(user._id));
+      user.totalSpent = userExpenses.reduce((total, expense) => total + expense.total, 0);
+      await user.save();
+    }
 
     console.log('Database seeded successfully');
     process.exit();
