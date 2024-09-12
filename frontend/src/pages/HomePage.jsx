@@ -10,8 +10,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Typography, Grid  } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import EditProfileModal from "../components/EditProfileModal";
 import "./HomePage.css";
 
 const HomePage = () => {
@@ -21,6 +22,12 @@ const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [viewItemsFor, setViewItemsFor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+
+  // Function to open edit profile modal
+  const openEditProfile = () => {
+    setShowEditProfileModal(true);
+  };
 
   const fetchUserData = async () => {
     try {
@@ -53,7 +60,7 @@ const HomePage = () => {
       const profilesObject = data.reduce((acc, profile) => {
         acc[profile._id] = {
           ...profile,
-          profilePic: profile.img, // Fetch image URL from database
+          profilePic: profile.profilePic, // Fetch image URL from database
         };
         return acc;
       }, {});
@@ -67,7 +74,7 @@ const HomePage = () => {
   const calculateTotals = () => {
     let totalExpenses = 0;
     const userExpenses = {};
-  
+
     // Calculate total expenses and individual user expenses
     allExpenses.forEach((expense) => {
       totalExpenses += expense.total;
@@ -76,25 +83,24 @@ const HomePage = () => {
       }
       userExpenses[expense.paidBy] += expense.total;
     });
-  
+
     // Initialize any missing users with 0 expenses
     Object.keys(userProfiles).forEach((userId) => {
       if (!userExpenses[userId]) {
         userExpenses[userId] = 0;
       }
     });
-  
+
     const avgExpense = totalExpenses / Object.keys(userProfiles).length;
     const userBalances = {};
-  
+
     // Calculate each user's balance (paid - average)
     Object.keys(userProfiles).forEach((userId) => {
       userBalances[userId] = userExpenses[userId] - avgExpense;
     });
-  
+
     return { totalExpenses, userExpenses, userBalances };
   };
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,40 +152,57 @@ const HomePage = () => {
     <ThemeProvider theme={theme}>
       <div className="homepage">
         {userData && (
-          <Paper elevation={6} className="user-info bgPrimary">
-            <div>
-              <Avatar
-                src={userProfiles[userData._id]?.profilePic}
-                alt={userData.name}
-                sx={{ width: 56, height: 56 }}
-              />
-            </div>
+           <Paper elevation={6} className="user-info bgPrimary">
+           <Grid container spacing={2} alignItems="center">
+             <Grid item>
+               <Avatar
+                 src={userProfiles[userData._id]?.profilePic}
+                 alt={userData.name}
+                 sx={{ width: 56, height: 56 }}
+               />
+             </Grid>
+             <Grid item xs>
+               <Typography variant="h5">{userData.name}</Typography>
+               <Typography variant="body1">
+                 Total Expenses: ₹{userData.totalSpent?.toFixed(2)}
+               </Typography>
+             </Grid>
+             <Grid item>
+               <Button
+                 variant="outlined"
+                 onClick={openEditProfile}
+                 sx={{ marginTop: 1 }}
+               >
+                 Edit Profile
+               </Button>
+             </Grid>
+           </Grid>
 
-            <div className="about">
-              <div>
-                <Typography variant="h5">{userData.name}</Typography>
-                <Typography variant="body1">
-                  Total Expenses: ₹{userData.totalSpent?.toFixed(2)}
-                </Typography>
-              </div>
-            </div>
-          </Paper>
-        )}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setShowModal(true)}
-          sx={{ margin: "20px 0" }}
-        >
-          Add Expense
-        </Button>
-        {showModal && (
-          <AddExpenseModal
-            open={showModal}
-            onClose={() => setShowModal(false)}
-            refreshExpenses={fetchAllExpenses}
-          />
-        )}
+           {showEditProfileModal && (
+             <EditProfileModal
+               open={showEditProfileModal}
+               onClose={() => setShowEditProfileModal(false)}
+               userId={userData._id}
+               refreshUserData={fetchUserData}
+             />
+           )}
+         </Paper>
+       )}
+       <Button
+         variant="contained"
+         color="primary"
+         onClick={() => setShowModal(true)}
+         sx={{ margin: "20px 0" }}
+       >
+         Add Expense
+       </Button>
+       {showModal && (
+         <AddExpenseModal
+           open={showModal}
+           onClose={() => setShowModal(false)}
+           refreshExpenses={fetchAllExpenses}
+         />
+       )}
 
         {/* First Table: Display all expenses */}
         <TableContainer component={Paper} className="bgPrimary">
@@ -204,6 +227,13 @@ const HomePage = () => {
                       <TableCell>{expense.title}</TableCell>
                       <TableCell>₹{expense.total.toFixed(2)}</TableCell>
                       <TableCell>
+                        <div>
+                          <Avatar
+                            src={userProfiles[expense.paidBy]?.profilePic}
+                            alt={userData.name}
+                            sx={{ width: 25, height: 25 }}
+                          />
+                        </div>
                         {userProfiles[expense.paidBy]?.name || "Unknown"}
                       </TableCell>
                       <TableCell>
@@ -222,41 +252,49 @@ const HomePage = () => {
                       </TableCell>
                     </TableRow>
                     {viewItemsFor === expense._id && (
-  <TableRow>
-    <TableCell colSpan={5}>
-      <Table size="small" aria-label="items table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Item Name</TableCell>
-            <TableCell>Price</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {expense.items.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>₹{item.price.toFixed(2)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <Table size="small" aria-label="items table">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Item Name</TableCell>
+                                <TableCell>Price</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {expense.items.map((item, index) => (
+                                <TableRow key={index}>
+                                  <TableCell>{item.name}</TableCell>
+                                  <TableCell>
+                                    ₹{item.price.toFixed(2)}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
 
-      {/* Note Row */}
-      <Table size="small" aria-label="note table" sx={{ marginTop: '10px' }}>
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={2}>
-              <Typography variant="body2" component="div">
-                <strong>Note:</strong> {expense.note ? expense.note : "No note added"}
-              </Typography>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableCell>
-  </TableRow>
-)}
-
+                          {/* Note Row */}
+                          <Table
+                            size="small"
+                            aria-label="note table"
+                            sx={{ marginTop: "10px" }}
+                          >
+                            <TableBody>
+                              <TableRow>
+                                <TableCell colSpan={2}>
+                                  <Typography variant="body2" component="div">
+                                    <strong>Note:</strong>{" "}
+                                    {expense.note
+                                      ? expense.note
+                                      : "No note added"}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </React.Fragment>
                 ))
               ) : (
@@ -266,26 +304,31 @@ const HomePage = () => {
               )}
               {/* Total expenses row at the end of the first table */}
               <TableRow>
-
-  <TableCell colSpan={2} align="left">
-    <Typography
-      variant="h6"
-      component="span"
-      style={{ display: "inline-flex", whiteSpace: "nowrap", textAlign: "left" }}
-    >
-      Total Expenses: ₹ 
-      {allExpenses.reduce((sum, expense) => sum + expense.total, 0).toFixed(2)}{" "}
-      {"\u00A0\u00A0"} 
-     {"  &  "}  {"\u00A0\u00A0"} {"Per person: ₹"}
-    
-      {(
-        allExpenses.reduce((sum, expense) => sum + expense.total, 0) / 4
-      ).toFixed(2)}
-    </Typography>
-  </TableCell>
-</TableRow>
-
-
+                <TableCell colSpan={2} align="left">
+                  <Typography
+                    variant="h6"
+                    component="span"
+                    style={{
+                      display: "inline-flex",
+                      whiteSpace: "nowrap",
+                      textAlign: "left",
+                    }}
+                  >
+                    Total Expenses: ₹
+                    {allExpenses
+                      .reduce((sum, expense) => sum + expense.total, 0)
+                      .toFixed(2)}{" "}
+                    {"\u00A0\u00A0"}
+                    {"  &  "} {"\u00A0\u00A0"} {"Per person: ₹"}
+                    {(
+                      allExpenses.reduce(
+                        (sum, expense) => sum + expense.total,
+                        0
+                      ) / 4
+                    ).toFixed(2)}
+                  </Typography>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
@@ -307,6 +350,13 @@ const HomePage = () => {
               {Object.keys(userProfiles).map((userId) => (
                 <TableRow key={userId}>
                   <TableCell>
+                    <div>
+                      <Avatar
+                        src={userProfiles[userId]?.profilePic}
+                        alt={userData.name}
+                        sx={{ width: 25, height: 25 }}
+                      />
+                    </div>
                     {userProfiles[userId]?.name || "Unknown"}
                   </TableCell>
                   <TableCell>
