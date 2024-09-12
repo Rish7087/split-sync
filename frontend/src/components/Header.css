@@ -1,4 +1,4 @@
-.header{
+.header {
     text-align: center;
     background-color: var(--primary-color);
     display: flex;
@@ -6,6 +6,12 @@
     justify-content: center;
 }
 
-.header img{
-    width: 25%;
+.header img {
+    width: 100%; /* Default to 100% for small screens */
+}
+
+@media only screen and (min-width: 800px) {
+    .header img {
+        width: 25%; /* Adjust to 25% for screens 800px and larger */
+    }
 }
