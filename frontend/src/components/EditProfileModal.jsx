@@ -16,7 +16,7 @@ const EditProfileModal = ({ open, onClose, userId, refreshUserData }) => {
       // Fetch current user data when the modal opens
       const fetchUserData = async () => {
         try {
-          const response = await axios.get(`http://localhost:8080/user/${userId}/data`);
+          const response = await axios.get(`https://split-buddies.onrender.com/user/${userId}/data`);
           setFormData({
             name: response.data.name,
             profilePic: response.data.img || null,
@@ -51,7 +51,7 @@ const EditProfileModal = ({ open, onClose, userId, refreshUserData }) => {
       }
   
       // Send the updated profile data to the backend
-      await axios.put(`http://localhost:8080/user/${userId}/update`, form, {
+      await axios.put(`https://split-buddies.onrender.com/user/${userId}/update`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
   

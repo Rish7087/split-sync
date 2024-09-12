@@ -34,7 +34,7 @@ const HomePage = () => {
       const user = getUserFromCookie("currentUser");
       if (user && user._id) {
         const response = await axios.get(
-          `http://localhost:8080/user/${user._id}/data`
+          `https://split-buddies.onrender.com/user/${user._id}/data`
         );
         setUserData(response.data);
       }
@@ -45,7 +45,7 @@ const HomePage = () => {
 
   const fetchAllExpenses = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/expenses/all");
+      const response = await axios.get("https://split-buddies.onrender.com/expenses/all");
       setAllExpenses(response.data.expenses || []);
     } catch (error) {
       console.error("Error fetching all expenses:", error);
@@ -54,7 +54,7 @@ const HomePage = () => {
 
   const fetchUserProfiles = async () => {
     try {
-      const response = await fetch("http://localhost:8080/user/all");
+      const response = await fetch("https://split-buddies.onrender.com/user/all");
       const data = await response.json();
 
       const profilesObject = data.reduce((acc, profile) => {

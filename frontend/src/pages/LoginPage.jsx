@@ -23,7 +23,7 @@ export default function LoginPage() {
   const handleLogin = () => {
     const selectedProfile = localStorage.getItem("selectedProfile");
     // console.log("selected profile data: ", selectedProfile);
-    fetch(`http://localhost:8080/user/${selectedProfile}/validate`, {
+    fetch(`https://split-buddies.onrender.com/user/${selectedProfile}/validate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
