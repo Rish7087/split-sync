@@ -1,94 +1,16 @@
-.homepage {
-  padding: 20px;
+.homepage{
+  padding: 2rem;
+  color: var(--text-color) !important;
 }
-
-.user-info {
+.user-info{
   display: flex;
+  gap: 2rem;
+  padding: 1rem;
   align-items: center;
-  margin-bottom: 20px;
-  /* background-color: antiquewhite; */
-  margin: 2rem 2rem;
-}
-.userprofile-pic{
-  height: 8rem;
-  width: 8rem;
-  margin-right: 2rem;
-  border-radius: 50%;
-}
-.about{
-  display: flex;
-  flex-direction: column;
 }
 
-.about h1,p{
-  margin: 0;
-}
-.homepanel img{
-  width: 1rem;
-  border-radius: 50%;
+.bgPrimary{
+  background-color: var(--primary-color) !important;
+  background-image: none !important; /* Ensure no background image is applied */
 }
 
-.homepanel{
-  height: 50vh;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  background-color: var(--primary-color);
-  padding-bottom: 2rem;
-}
-.groupCon{
-  /* background-color: var(--secondary-color); */
-  height: 80%;
-  width: 10%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-.group{
- height: 2.5rem;
- width: 2.5rem;
- background-color: var(--secondary-color);
- border-radius: 50%;
- border: 2px solid;
-}
-h3{
-  margin: 0;
-}
-.group:hover{
-  box-shadow: 0 0 20px var(--text-color);
-  background-color: var(--text-color);
-}
-.expenses-table{
-width: 60%;
-}
-.expenses-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.expenses-table th, .expenses-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.expenses-table th {
-  background-color: var(--primary-color);
-}
-
-.piechart{
-  width: 20%;
-  height: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-.pie{
-  height: 10rem;
-  width: 10rem;
-  background-color: var(--secondary-color);
-  border-radius: 50%;
-}
