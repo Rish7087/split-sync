@@ -6,15 +6,12 @@ const { storage } = require('../cloudConfig');
 const upload = multer({ storage });
 
 // Get all users
-router.get('/all', userController.fetchAll); // Ensure `fetchAll` is defined in userController
+router.get('/all', userController.fetchAll);
 
 // Update user data by ID
-router.put('/:id/update',upload.single('profilePic'), userController.updateUser);
-
-// Validate PIN
-router.post('/:id/validate', userController.validatePin); // Ensure `validatePin` is defined in userController
+router.put('/:id/update', upload.single('profilePic'), userController.updateUser);
 
 // Fetch User Data
-router.get('/:id/data', userController.getUserData); // Ensure `getUserData` is defined in userController
+router.get('/:id/data', userController.getUserData);
 
 module.exports = router;

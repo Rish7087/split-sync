@@ -16,7 +16,7 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
   const fetchItemOptions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://split-buddies.onrender.com/items'); // Update to correct API for fetching items
+      const response = await axios.get('http://localhost:8080/items'); // Update to correct API for fetching items
       // Note: itemOptions is no longer used in this simplified version
     } catch (error) {
       console.error('Error fetching item options:', error);
@@ -87,7 +87,7 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
 
       console.log('Submitting expense data:', expenseData); // Debug log
 
-      await axios.post('https://split-buddies.onrender.com/expenses/add', expenseData);
+      await axios.post('http://localhost:8080/expenses/add', expenseData);
       refreshExpenses();
       onClose();
     } catch (error) {

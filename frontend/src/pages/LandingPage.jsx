@@ -7,7 +7,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://split-buddies.onrender.com/user/all')
+    fetch('http://localhost:8080/user/all')
       .then((res) => res.json())
       .then((data) => {
         setProfiles(data);

@@ -1,24 +1,37 @@
 const Expense = require('../models/expense'); // Ensure this is your Expense model
+const ExpenseList = require('../models/expenseList'); // Ensure this is your ExpenseList model
 const User = require('../models/user'); // Ensure this is your User model
 
 // Controller to add an expense
 exports.addExpense = async (req, res) => {
-  console.log("add expense req recieved");
+  console.log("Add expense request received");
   try {
-    console.log("trying to add expense");
-    const { title, total, paidBy, items, note } = req.body;
-     console.log(req.body);
+    console.log("Trying to add expense");
+    const { title, total, paidBy, items, note, expenseListId, houseId, roomId } = req.body;
+
     const newExpense = new Expense({
       title,
       total,
       paidBy,
       items,
       note,
+      houseId,
+      roomId,
+      expenseListId
     });
 
     const savedExpense = await newExpense.save();
+
+    // Add the expense to the associated expense list
+    await ExpenseList.findByIdAndUpdate(
+      expenseListId,
+      { $push: { expenses: savedExpense._id } },
+      { new: true }
+    );
+
     res.status(201).json({ message: 'Expense added successfully', expense: savedExpense });
   } catch (error) {
+    console.error('Error adding expense:', error);
     res.status(500).json({ error: 'Error adding expense', details: error.message });
   }
 };
@@ -40,15 +53,21 @@ exports.deleteExpense = async (req, res) => {
       expense: deletedExpense
     });
   } catch (error) {
+    console.error('Error deleting expense:', error);
     res.status(500).json({ error: 'Error deleting expense', details: error.message });
   }
 };
 
 // Controller to fetch all expenses and user details
-exports.fetchAll = async (req, res) => {
+exports.fetchAllExpenses = async (req, res) => {
   try {
-    // Fetch all expenses
-    const expenses = await Expense.find({}).lean();
+    const { houseId, roomId } = req.query;
+
+    const query = {};
+    if (houseId) query.houseId = houseId;
+    if (roomId) query.roomId = roomId;
+
+    const expenses = await Expense.find(query).populate('paidBy', 'name').lean();
 
     // Extract user IDs from expenses
     const userIds = [...new Set(expenses.map(expense => expense.paidBy))];

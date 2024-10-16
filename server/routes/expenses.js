@@ -9,6 +9,6 @@ router.post('/add', expenseController.addExpense);
 router.delete('/delete/:id', expenseController.deleteExpense);
 
 // Route to fetch all expenses
-router.get('/all', expenseController.fetchAll);
+router.get('/all', expenseController.fetchAllExpenses);
 
 module.exports = router;

@@ -15,3 +15,16 @@
         width: 25%; /* Adjust to 25% for screens 800px and larger */
     }
 }
+.logout-btn {
+    background-color: #ff5722;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.logout-btn:hover {
+    background-color: #e64a19;
+}
