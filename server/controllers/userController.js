@@ -63,3 +63,22 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to update user' });
   }
 };
+// Fetch user houses
+exports.getUserHouses = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+      _id: userId,
+      name: user.name,
+      houses: user.houses ,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+
+}

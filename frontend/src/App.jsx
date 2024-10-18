@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
+import HouseDetails from "./pages/HouseDetails";
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -64,6 +65,7 @@ function App() {
             path="/home"
             element={user ? <HomePage user={user} /> : <Navigate to="/login" />}
           />
+          <Route path="/house/:houseId" element={<HouseDetails />} />
           <Route path="*" element={<Navigate to={user ? "/home" : "/login"} />} />
         </Routes>
       </Router>

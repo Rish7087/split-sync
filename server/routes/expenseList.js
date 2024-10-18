@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const expenseListController = require('../controllers/expenseListController');
+const expenseListController = require('../controllers/expenseListController.js');
 
 // Route to create a new expense list
 router.post('/create', expenseListController.createExpenseList);

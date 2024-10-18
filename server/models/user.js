@@ -10,8 +10,7 @@ const userSchema = new mongoose.Schema({
   owes: { type: Number, default: 0 }, // Total amount owed
   owned: { type: Number, default: 0 }, // Total amount owned
   totalExpense: { type: Number, default: 0 },
-  homes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Home' }],
-  role: { type: String, enum: ['admin', 'member'], default: 'member' }
+  houses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'House' }],
 });
 
 // Check if the model is already compiled to avoid errors

@@ -7,7 +7,9 @@ const userRoutes = require('./routes/user');
 const authRoutes = require('./routes/auth');   // Corrected typo from 'authROutes' to 'authRoutes'
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-
+const houseRoutes = require('./routes/house');
+const roomRoutes = require('./routes/room');
+expenseList = require('./routes/expenseList');
 const passport = require('passport');
 require('dotenv').config();  // Load environment variables
 require('./passportConfig'); // Import passport configuration
@@ -51,6 +53,7 @@ app.use(passport.session());
 app.use('/expenses', expenseRoutes);
 app.use('/user', userRoutes);
 app.use('/auth', authRoutes);
+app.use('/house',houseRoutes);
 
 app.get("/", (req, res) => {
     res.send("Welcome to Split Buddies");
