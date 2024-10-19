@@ -12,5 +12,5 @@ router.get('/all/:userId', houseController.fetchHousesByUser);
 router.get('/:houseId', houseController.getHouseDetails);
 
 // Route to add new member to the a house
-router.post('/:houseid/add', houseController.addHouseMember);
+router.post('/add-member', houseController.addHouseMember);
 module.exports = router;

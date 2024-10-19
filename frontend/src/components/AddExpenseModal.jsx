@@ -5,19 +5,19 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getUserFromCookie } from '../utils/cookieUtils'; // Utility function for fetching user
 
-const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
+const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => { // Accept expenseListId prop
   const [title, setTitle] = useState('');
   const [items, setItems] = useState([{ name: '', price: '' }]);
   const [note, setNote] = useState('');
   const [total, setTotal] = useState(0); // Initialize total state
   const [loading, setLoading] = useState(false);
 
-  // Fetch items for autocomplete suggestions asynchronously
+  // Fetch items for autocomplete suggestions asynchronously (optional if required)
   const fetchItemOptions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/items'); // Update to correct API for fetching items
-      // Note: itemOptions is no longer used in this simplified version
+      const response = await axios.get('http://localhost:8080/items'); // API for fetching items (optional)
+      // itemOptions is not used in this example
     } catch (error) {
       console.error('Error fetching item options:', error);
     } finally {
@@ -25,7 +25,7 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
     }
   };
 
-  // Load item options on open
+  // Load item options on open (optional)
   useEffect(() => {
     if (open) {
       fetchItemOptions();
@@ -71,8 +71,8 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
     }
 
     try {
-      const user = getUserFromCookie('currentUser');
-      const paidBy = user._id;
+      const user = getUserFromCookie('currentUser'); // Fetch current user
+      const paidBy = user._id; // Use user ID for "paid by"
 
       const expenseData = {
         title,
@@ -83,13 +83,14 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses }) => {
           price: parseFloat(item.price),
         })),
         note,
+        expenseListId, // Attach expense to the current expense list
       };
 
       console.log('Submitting expense data:', expenseData); // Debug log
 
-      await axios.post('http://localhost:8080/expenses/add', expenseData);
-      refreshExpenses();
-      onClose();
+      await axios.post(`http://localhost:8080/expenses/${expenseListId}/add`, expenseData); // Post to specific expense list
+      refreshExpenses(); // Refresh the expenses to reflect changes
+      onClose(); // Close the modal
     } catch (error) {
       console.error('Error adding expense:', error);
     }

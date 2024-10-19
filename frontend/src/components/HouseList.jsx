@@ -27,13 +27,17 @@ const HouseList = ({ userId }) => {
     try {
       const response = await axios.post(`http://localhost:8080/house/create`, {
         name: houseName,
-        members: [userId], // Add current user as a member
+        userId: userId
       });
       const newHouse = response.data.house;
       setHouses((prevHouses) => [...prevHouses, newHouse]);
       handleClose(); // Close modal after creating the house
     } catch (error) {
-      console.error('Error creating house:', error);
+      if (error.response) {
+        alert(`Error: ${error.response.data.message}`);
+      } else {
+        console.error('Error creating house:', error);
+      }
     }
   };
 
