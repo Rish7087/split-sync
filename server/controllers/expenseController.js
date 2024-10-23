@@ -2,32 +2,41 @@ const Expense = require('../models/expense'); // Ensure this is your Expense mod
 const ExpenseList = require('../models/expenseList'); // Ensure this is your ExpenseList model
 const User = require('../models/user'); // Ensure this is your User model
 
-// Controller to add an expense
+//Add Expense
 exports.addExpense = async (req, res) => {
   console.log("Add expense request received");
   try {
     console.log("Trying to add expense");
+    
     const { title, total, paidBy, items, note, expenseListId, houseId, roomId } = req.body;
+    
+    // Ensure title, total, and paidBy are provided
+    if (!title || !total || !paidBy) {
+      return res.status(400).json({ error: 'Title, total, and paidBy are required fields.' });
+    }
 
+    // Creating the new expense object
     const newExpense = new Expense({
       title,
       total,
       paidBy,
       items,
-      note,
-      houseId,
-      roomId,
-      expenseListId
+      note: note || 'NA', // Default note if not provided
+      houseId: houseId || null, // Default to null for personal expenses
+      roomId: roomId || null,   // Default to null for personal expenses
+      expenseListId: expenseListId || null // Optional, depending on personal or group expense
     });
 
     const savedExpense = await newExpense.save();
 
-    // Add the expense to the associated expense list
-    await ExpenseList.findByIdAndUpdate(
-      expenseListId,
-      { $push: { expenses: savedExpense._id } },
-      { new: true }
-    );
+    // Only associate with expense list if `expenseListId` is provided
+    if (expenseListId) {
+      await ExpenseList.findByIdAndUpdate(
+        expenseListId,
+        { $push: { expenses: savedExpense._id } },
+        { new: true }
+      );
+    }
 
     res.status(201).json({ message: 'Expense added successfully', expense: savedExpense });
   } catch (error) {

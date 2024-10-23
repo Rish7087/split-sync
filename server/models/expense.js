@@ -13,8 +13,8 @@ const expenseSchema = new mongoose.Schema({
   items: { type: [itemSchema], required: true }, // Array of item objects
   date: { type: Date, default: Date.now },
   note: { type: String, default: "NA" },
-  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', default: null }, // Optional reference to a Room
-  houseId: { type: mongoose.Schema.Types.ObjectId, ref: 'House', required: true }, // Required reference to House
+  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', default: null , required: false}, // Optional reference to a Room
+  houseId: { type: mongoose.Schema.Types.ObjectId, ref: 'House', required: false }, // Required reference to House
   expenseListId: { type: mongoose.Schema.Types.ObjectId, ref: 'ExpenseList', default: null }, // Optional reference to ExpenseList
 });
 

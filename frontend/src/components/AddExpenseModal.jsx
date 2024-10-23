@@ -11,6 +11,17 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
   const [note, setNote] = useState('');
   const [total, setTotal] = useState(0); // Initialize total state
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  // Get current user from session storage
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser));
+    } else {
+      console.error("User not found in session storage");
+    }
+  }, []);
 
   // Fetch items for autocomplete suggestions asynchronously (optional if required)
   const fetchItemOptions = async () => {
@@ -56,6 +67,12 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!userData || !userData._id) {
+      console.error("User data is not available yet");
+      return;
+    }
+
+    const userId = userData._id;
     // Validate title, total, and item prices
     if (!title.trim()) {
       alert('Title is required');
@@ -72,7 +89,7 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
 
     try {
       const user = getUserFromCookie('currentUser'); // Fetch current user
-      const paidBy = user._id; // Use user ID for "paid by"
+      const paidBy = userId; // Use user ID for "paid by"
 
       const expenseData = {
         title,
@@ -88,7 +105,7 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
 
       console.log('Submitting expense data:', expenseData); // Debug log
 
-      await axios.post(`http://localhost:8080/expenses/${expenseListId}/add`, expenseData); // Post to specific expense list
+      await axios.post(`http://localhost:8080/expenses/add`, expenseData); // Post to specific expense list
       refreshExpenses(); // Refresh the expenses to reflect changes
       onClose(); // Close the modal
     } catch (error) {

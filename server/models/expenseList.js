@@ -19,7 +19,12 @@ const expenseListSchema = new mongoose.Schema({
   houseId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'House', 
-    required: true 
+    required: false 
+  },
+  roomId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Room', 
+    required: false 
   },
   members: [{
     userId: { 

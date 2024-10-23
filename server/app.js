@@ -9,7 +9,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const houseRoutes = require('./routes/house');
 const roomRoutes = require('./routes/room');
-expenseList = require('./routes/expenseList');
+const expenseListRoute = require('./routes/expenseList');
 const passport = require('passport');
 require('dotenv').config();  // Load environment variables
 require('./passportConfig'); // Import passport configuration
@@ -48,17 +48,21 @@ app.use(session({
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
-
+// app.use((req, res, next) => {
+//     console.log(`${req.method} request for '${req.url}'`);
+//     next();
+//   });
 // Route handlers
 app.use('/expenses', expenseRoutes);
 app.use('/user', userRoutes);
 app.use('/auth', authRoutes);
 app.use('/house',houseRoutes);
-
+app.use('/expenselist', expenseListRoute)
 app.get("/", (req, res) => {
     res.send("Welcome to Split Buddies");
 });
 
+  
 app.listen(PORT, () => {
     console.log("Server is running at port: " + PORT);
 });

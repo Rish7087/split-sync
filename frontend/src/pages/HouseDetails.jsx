@@ -1,9 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar } from '@mui/material';
-import AddHouseMembers from '../components/AddHouseMember';
-import AddExpenseModal from '../components/AddExpenseModal';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Button,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Avatar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import AddHouseMembers from "../components/AddHouseMember";
+import AddExpenseModal from "../components/AddExpenseModal";
 
 const HouseDetails = () => {
   const { houseId } = useParams();
@@ -13,41 +28,61 @@ const HouseDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedExpenseList, setSelectedExpenseList] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch current user from sessionStorage
   useEffect(() => {
-    const storedUser = sessionStorage.getItem('user');
+    const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
   }, []);
 
-  // Fetch house details when the component mounts
   useEffect(() => {
     fetchHouseDetails();
   }, []);
 
-  // Fetch house details
   const fetchHouseDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/house/${houseId}`);
+      const response = await axios.get(
+        `http://localhost:8080/house/${houseId}`
+      );
+      // console.log(response.data);
       if (response.data) {
         setHouse(response.data);
-        const { expenses, members } = response.data;
-        if (expenses && members) {
-          setAllExpenses(expenses); // Set expenses data
-          calculateUserBalances(expenses, members); // Calculate balances
-        } else {
-          console.error('Expenses or members data missing in house details');
-        }
+        const recentExpenseListId =
+          response.data.expenseLists[response.data.expenseLists.length - 1];
+        setSelectedExpenseList(recentExpenseListId);
+        await fetchExpenses(recentExpenseListId);
       } else {
-        console.error('House data is empty');
+        console.error("House data is empty");
       }
     } catch (error) {
-      console.error('Error fetching house details:', error);
+      console.error("Error fetching house details:", error);
     } finally {
-      setLoading(false); // Ensure loading is set to false
+      setLoading(false);
+    }
+  };
+
+  const handleSelectExpenseList = (event) => {
+    const expenseListId = event.target.value;
+    setSelectedExpenseList(expenseListId);
+    fetchExpenses(expenseListId);
+  };
+
+  const fetchExpenses = async (expenseListId) => {
+    console.log("tryng to fetch:", expenseListId);
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/expenselist/fetch/${expenseListId}`
+      );
+      console.log("Fetched expenses: ", response.data);
+      setAllExpenses(response.data.expenses || []);
+      if (house && house.members) {
+        calculateUserBalances(response.data.expenses || [], house.members);
+      }
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
     }
   };
 
@@ -57,7 +92,8 @@ const HouseDetails = () => {
 
     expenses.forEach((expense) => {
       totalExpenses += expense.total;
-      userExpenses[expense.paidBy] = (userExpenses[expense.paidBy] || 0) + expense.total;
+      userExpenses[expense.paidBy] =
+        (userExpenses[expense.paidBy] || 0) + expense.total;
     });
 
     const avgExpense = totalExpenses / members.length;
@@ -65,18 +101,15 @@ const HouseDetails = () => {
       acc[member._id] = (userExpenses[member._id] || 0) - avgExpense;
       return acc;
     }, {});
-
-    setUserBalances(balances); // Update state with balances
+    console.log("Balances: ", balances);
+    setUserBalances(balances);
   };
 
   const refreshHouseDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/house/${houseId}`);
-      setHouse(response.data);
-      setAllExpenses(response.data.expenses);
-      calculateUserBalances(response.data.expenses, response.data.members);
+      await fetchHouseDetails();
     } catch (error) {
-      console.error('Error refreshing house details:', error);
+      console.error("Error refreshing house details:", error);
     }
   };
 
@@ -85,7 +118,7 @@ const HouseDetails = () => {
       await axios.post(`http://localhost:8080/house/${houseId}/clear-expenses`);
       refreshHouseDetails();
     } catch (error) {
-      console.error('Error clearing balances:', error);
+      console.error("Error clearing balances:", error);
     }
   };
 
@@ -94,20 +127,33 @@ const HouseDetails = () => {
   }
 
   return (
-    <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+    <Paper elevation={3} style={{ padding: "20px", marginTop: "20px" }}>
       <Typography variant="h5">House Details: {house.name}</Typography>
 
       <AddHouseMembers houseId={houseId} onMemberAdded={refreshHouseDetails} />
 
-      <Typography variant="body1" style={{ marginTop: '10px' }}>
+      <Typography variant="body1" style={{ marginTop: "10px" }}>
         Number of Members: {house.members.length}
       </Typography>
+
+      {/* Dropdown to select expense list */}
+      <FormControl fullWidth style={{ marginTop: "20px" }}>
+        <InputLabel>Expense List</InputLabel>
+        <Select value={selectedExpenseList} onChange={handleSelectExpenseList}>
+          {house.expenseLists.map((expenseListId) => (
+            <MenuItem key={expenseListId} value={expenseListId}>
+              {expenseListId}{" "}
+              {/* You can modify this to show a more descriptive name if needed */}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       <Button
         variant="contained"
         color="primary"
         onClick={() => setShowModal(true)}
-        style={{ marginTop: '20px' }}
+        style={{ marginTop: "20px" }}
       >
         Add Expense
       </Button>
@@ -116,16 +162,17 @@ const HouseDetails = () => {
         <AddExpenseModal
           open={showModal}
           onClose={() => setShowModal(false)}
+          expenseListId={selectedExpenseList}
           refreshExpenses={refreshHouseDetails}
         />
       )}
-
-      {allExpenses.length === 0 ? (
-        <Typography variant="body1" style={{ marginTop: '20px' }}>
+  {console.log("all expenses now: ", allExpenses)}
+      {Array.isArray(allExpenses) && allExpenses.length === 0 ? (
+        <Typography variant="body1" style={{ marginTop: "20px" }}>
           No expenses available
         </Typography>
       ) : (
-        <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <TableContainer component={Paper} style={{ marginTop: "20px" }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -139,7 +186,9 @@ const HouseDetails = () => {
             <TableBody>
               {allExpenses.map((expense) => (
                 <TableRow key={expense._id}>
-                  <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(expense.date).toLocaleDateString()}
+                  </TableCell>
                   <TableCell>{expense.title}</TableCell>
                   <TableCell>₹{expense.total.toFixed(2)}</TableCell>
                   <TableCell>
@@ -153,14 +202,19 @@ const HouseDetails = () => {
               ))}
               <TableRow>
                 <TableCell colSpan={3}>Total Expenses</TableCell>
-                <TableCell colSpan={2}>₹{allExpenses.reduce((sum, exp) => sum + exp.total, 0).toFixed(2)}</TableCell>
+                <TableCell colSpan={2}>
+                  ₹
+                  {allExpenses
+                    .reduce((sum, exp) => sum + exp.total, 0)
+                    .toFixed(2)}
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
       )}
 
-      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+      <TableContainer component={Paper} style={{ marginTop: "20px" }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -176,29 +230,30 @@ const HouseDetails = () => {
                   <Avatar src={member.profilePic} />
                   {member.name}
                 </TableCell>
-                <TableCell>₹{(userBalances[member._id] || 0).toFixed(2)}</TableCell>
                 <TableCell>
-  {userBalances[member._id] !== undefined
-    ? (userBalances[member._id] < 0
-        ? `Owes ₹${Math.abs(userBalances[member._id]).toFixed(2)}`
-        : `Owned ₹${userBalances[member._id].toFixed(2)}`)
-    : 'No balance data'}
-</TableCell>
-
+                  ₹{(userBalances[member._id] || 0).toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  {userBalances[member._id] !== undefined
+                    ? userBalances[member._id] < 0
+                      ? `Owes ₹${Math.abs(userBalances[member._id]).toFixed(2)}`
+                      : `Owned ₹${userBalances[member._id].toFixed(2)}`
+                    : "No balance data"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {currentUser?.role === 'admin' && (
+      {currentUser?.role === "admin" && (
         <Button
           variant="contained"
           color="secondary"
           onClick={handleClearBalances}
-          style={{ marginTop: '20px' }}
+          style={{ marginTop: "20px" }}
         >
-          Clear Balances
+          Clear Balances and Start New List
         </Button>
       )}
     </Paper>

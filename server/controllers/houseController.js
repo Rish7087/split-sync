@@ -72,16 +72,19 @@ exports.getHouseDetails = async (req, res) => {
 };
 // In your addHouseMember controller
 exports.addHouseMember = async (req, res) => {
-  const { houseId, email, currentUserId } = req.body; // Assuming currentUserId is passed
-  
+  const { houseId, email, userId } = req.body;
+  console.log("adding email: ", email);
+  console.log("adding houseId: ", houseId);
+  console.log("adding currentUserId: ", userId);
   try {
     // Find the house and check if the current user is the admin
     const house = await House.findById(houseId);
     if (!house) {
       return res.status(404).json({ message: 'House not found' });
     }
-    
-    if (house.admin.toString() !== currentUserId) {
+    console.log('Admin ID:', house.admin.toString());
+console.log('User ID:', userId);
+    if (house.admin.toString() !== userId) {
       return res.status(403).json({ message: 'Only the admin can add members' });
     }
 
@@ -90,12 +93,18 @@ exports.addHouseMember = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Check if the user is already a member
+    if (house.members.includes(user._id)) {
+      return res.status(400).json({ message: 'User is already a member of the house' });
+    }
+
     house.members.addToSet(user._id); // Ensure no duplicate members
     await house.save();
 
-    res.status(200).json({ house });
+    res.status(200).json({ message: 'Member added successfully', house });
   } catch (error) {
     console.error('Error adding member:', error);
     res.status(500).json({ message: 'Error adding member', error: error.message });
   }
 };
+
