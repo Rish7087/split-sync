@@ -24,7 +24,6 @@ const HouseDetails = () => {
   const { houseId } = useParams();
   const [house, setHouse] = useState(null);
   const [allExpenses, setAllExpenses] = useState([]);
-  const [userBalances, setUserBalances] = useState({});
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -47,7 +46,6 @@ const HouseDetails = () => {
       const response = await axios.get(
         `http://localhost:8080/house/${houseId}`
       );
-      // console.log(response.data);
       if (response.data) {
         setHouse(response.data);
         const recentExpenseListId =
@@ -71,43 +69,61 @@ const HouseDetails = () => {
   };
 
   const fetchExpenses = async (expenseListId) => {
-    console.log("tryng to fetch:", expenseListId);
+    console.log("Trying to fetch:", expenseListId);
     try {
       const response = await axios.get(
         `http://localhost:8080/expenselist/fetch/${expenseListId}`
       );
       console.log("Fetched expenses: ", response.data);
       setAllExpenses(response.data.expenses || []);
-      if (house && house.members) {
-        calculateUserBalances(response.data.expenses || [], house.members);
-      }
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }
   };
 
   const calculateUserBalances = (expenses, members) => {
-    let totalExpenses = 0;
-    const userExpenses = {};
+    const totalExpenses = {};
+    const memberCount = members.length;
 
-    expenses.forEach((expense) => {
-      totalExpenses += expense.total;
-      userExpenses[expense.paidBy] =
-        (userExpenses[expense.paidBy] || 0) + expense.total;
+    // Initialize total paid for each member
+    members.forEach(member => {
+      totalExpenses[member._id] = {
+        totalPaid: 0,
+        name: member.name,
+        profilePic: member.profilePic,
+      };
     });
 
-    const avgExpense = totalExpenses / members.length;
-    const balances = members.reduce((acc, member) => {
-      acc[member._id] = (userExpenses[member._id] || 0) - avgExpense;
-      return acc;
-    }, {});
-    console.log("Balances: ", balances);
-    setUserBalances(balances);
+    // Calculate total paid by each member
+    expenses.forEach(expense => {
+      const paidBy = expense.paidBy; // Member who paid
+      const total = expense.total;
+
+      // Add total paid to the corresponding member
+      if (totalExpenses[paidBy]) {
+        totalExpenses[paidBy].totalPaid += total;
+      }
+    });
+
+    // Calculate average expense
+    const totalPaid = Object.values(totalExpenses).reduce((sum, member) => sum + member.totalPaid, 0);
+    const avgExpense = totalPaid / memberCount || 0;
+
+    // Prepare the balance information for display
+    return members.map(member => {
+      const paid = totalExpenses[member._id]?.totalPaid || 0;
+      const owed = avgExpense - paid; // What each member owes or owns
+      return {
+        ...member,
+        totalPaid: paid,
+        balance: owed, // Positive if they own money, negative if they owe money
+      };
+    });
   };
 
   const refreshHouseDetails = async () => {
     try {
-      await fetchHouseDetails();
+      await fetchHouseDetails(); // This fetches house and associated expenses
     } catch (error) {
       console.error("Error refreshing house details:", error);
     }
@@ -125,6 +141,8 @@ const HouseDetails = () => {
   if (loading || !house) {
     return <Typography>Loading...</Typography>;
   }
+
+  const userBalances = calculateUserBalances(allExpenses, house.members);
 
   return (
     <Paper elevation={3} style={{ padding: "20px", marginTop: "20px" }}>
@@ -166,7 +184,7 @@ const HouseDetails = () => {
           refreshExpenses={refreshHouseDetails}
         />
       )}
-  {console.log("all expenses now: ", allExpenses)}
+
       {Array.isArray(allExpenses) && allExpenses.length === 0 ? (
         <Typography variant="body1" style={{ marginTop: "20px" }}>
           No expenses available
@@ -224,21 +242,19 @@ const HouseDetails = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {house.members.map((member) => (
+            {userBalances.map((member) => (
               <TableRow key={member._id}>
                 <TableCell>
                   <Avatar src={member.profilePic} />
                   {member.name}
                 </TableCell>
                 <TableCell>
-                  ₹{(userBalances[member._id] || 0).toFixed(2)}
+                  ₹{member.totalPaid.toFixed(2)}
                 </TableCell>
                 <TableCell>
-                  {userBalances[member._id] !== undefined
-                    ? userBalances[member._id] < 0
-                      ? `Owes ₹${Math.abs(userBalances[member._id]).toFixed(2)}`
-                      : `Owned ₹${userBalances[member._id].toFixed(2)}`
-                    : "No balance data"}
+                  {member.balance < 0
+                    ? `Owes ₹${Math.abs(member.balance).toFixed(2)}`
+                    : `Owned ₹${member.balance.toFixed(2)}`}
                 </TableCell>
               </TableRow>
             ))}
@@ -246,14 +262,14 @@ const HouseDetails = () => {
         </Table>
       </TableContainer>
 
-      {currentUser?.role === "admin" && (
+      {currentUser && currentUser._id === house.admin && (
         <Button
           variant="contained"
           color="secondary"
           onClick={handleClearBalances}
           style={{ marginTop: "20px" }}
         >
-          Clear Balances and Start New List
+          Clear Balances
         </Button>
       )}
     </Paper>
