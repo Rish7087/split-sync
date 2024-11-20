@@ -49,7 +49,7 @@ const HouseDetails = () => {
   const fetchHouseDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/house/${houseId}`
+        `https://split-buddies.onrender.com/house/${houseId}`
       );
       if (response.data) {
         setHouse(response.data);
@@ -76,7 +76,7 @@ const HouseDetails = () => {
   const fetchExpenses = async (expenseListId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/expenselist/fetch/${expenseListId}`
+        `https://split-buddies.onrender.com/expenselist/fetch/${expenseListId}`
       );
       setAllExpenses(response.data.expenses || []);
     } catch (error) {
@@ -133,7 +133,7 @@ const HouseDetails = () => {
 
   const handleClearBalances = async () => {
     try {
-      await axios.post(`http://localhost:8080/house/${houseId}/clear-expenses`);
+      await axios.post(`https://split-buddies.onrender.com/house/${houseId}/clear-expenses`);
       refreshHouseDetails();
     } catch (error) {
       console.error("Error clearing balances:", error);

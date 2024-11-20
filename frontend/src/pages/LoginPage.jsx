@@ -6,13 +6,13 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8080/auth/google'; // Redirect to backend for Google login
+    window.location.href = 'https://split-buddies.onrender.com/auth/google'; // Redirect to backend for Google login
   };
 
   useEffect(() => {
     // Check if user is already logged in
     axios
-      .get('http://localhost:8080/auth/user', { withCredentials: true })
+      .get('https://split-buddies.onrender.com/auth/user', { withCredentials: true })
       .then((response) => {
         const { user, isNewUser } = response.data;
         if (user) {

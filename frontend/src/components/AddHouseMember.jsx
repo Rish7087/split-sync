@@ -24,7 +24,7 @@ const AddHouseMembers = ({ houseId, onMemberAdded }) => {
 
     if (query) {
       try {
-        const response = await axios.get(`http://localhost:8080/user/all`);
+        const response = await axios.get(`https://split-buddies.onrender.com/user/all`);
         setUsers(response.data); // Update users with response data
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -44,7 +44,7 @@ const AddHouseMembers = ({ houseId, onMemberAdded }) => {
     const userId = userData._id;
 
     try {
-      await axios.post(`http://localhost:8080/house/add-member`, { email, houseId, userId });
+      await axios.post(`https://split-buddies.onrender.com/house/add-member`, { email, houseId, userId });
       onMemberAdded(); // Call the function to update house members
       console.log('Member added:', email);
     } catch (error) {

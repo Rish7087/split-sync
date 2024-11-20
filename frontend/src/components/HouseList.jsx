@@ -12,7 +12,7 @@ const HouseList = ({ userId }) => {
   useEffect(() => {
     const fetchHouses = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/house/all/${userId}`);
+        const response = await axios.get(`https://split-buddies.onrender.com/house/all/${userId}`);
         setHouses(response.data || []); // Ensure it's an empty array if undefined
         // console.log(response.data);
       } catch (error) {
@@ -25,7 +25,7 @@ const HouseList = ({ userId }) => {
 
   const handleCreateHouse = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/house/create`, {
+      const response = await axios.post(`https://split-buddies.onrender.com/house/create`, {
         name: houseName,
         userId: userId
       });

@@ -29,7 +29,7 @@ export default function ButtonMenu({ user, refreshUserData }) {
 
   const handleLogout = () => {
     axios
-      .get("http://localhost:8080/auth/logout", { withCredentials: true })
+      .get("https://split-buddies.onrender.com/auth/logout", { withCredentials: true })
       .then(() => {
         sessionStorage.removeItem("user");
         navigate("/login");

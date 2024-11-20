@@ -21,7 +21,7 @@ function App() {
     // Fetch logged-in user data if not already available in session storage
     if (!user) {
       axios
-        .get("http://localhost:8080/auth/user", { withCredentials: true })
+        .get("https://split-buddies.onrender.com/auth/user", { withCredentials: true })
         .then((response) => {
           if (response.data.user) {
             setUser(response.data.user);
