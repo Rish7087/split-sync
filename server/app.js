@@ -14,8 +14,8 @@ const passport = require('passport');
 require('dotenv').config();  // Load environment variables
 require('./passportConfig'); // Import passport configuration
 
-const mongo_URI = process.env.mongo_URI;
-const PORT = process.env.PORT ; // Default to port 8080 if not set
+const mongo_URI = process.env.mongo_URI || "mongodb+srv://rishabhsaini40618:Mxy%407087@cluster0.uhyzl.mongodb.net/split-buddies?retryWrites=true&w=majority&appName=Cluster0";
+const PORT = process.env.PORT || 8080; // Default to port 8080 if not set
 
 async function main() {
     try {
