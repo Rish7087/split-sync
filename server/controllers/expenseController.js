@@ -67,7 +67,7 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
-// Controller to fetch all expenses and user details
+/// Controller to fetch all expenses and user details
 exports.fetchAllExpenses = async (req, res) => {
   try {
     const { houseId, roomId } = req.query;
@@ -76,10 +76,12 @@ exports.fetchAllExpenses = async (req, res) => {
     if (houseId) query.houseId = houseId;
     if (roomId) query.roomId = roomId;
 
-    const expenses = await Expense.find(query).populate('paidBy', 'name').lean();
+    const expenses = await Expense.find(query)
+      .populate('paidBy', 'name profilePic') // Added profilePic to the populated fields
+      .lean();
 
     // Extract user IDs from expenses
-    const userIds = [...new Set(expenses.map(expense => expense.paidBy))];
+    const userIds = [...new Set(expenses.map(expense => expense.paidBy._id))];
 
     // Fetch user details for the paidBy field
     const users = await User.find({ _id: { $in: userIds } }).lean();
@@ -87,7 +89,7 @@ exports.fetchAllExpenses = async (req, res) => {
     // Create a user map for quick lookup
     const userMap = {};
     users.forEach(user => {
-      userMap[user._id] = { name: user.name };
+      userMap[user._id] = { name: user.name, profilePic: user.profilePic }; // Added profilePic to the map
     });
 
     // Send back both expenses and the mapped user data

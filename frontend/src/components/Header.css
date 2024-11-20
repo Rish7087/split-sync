@@ -14,6 +14,7 @@
     .header img {
         width: 25%; /* Adjust to 25% for screens 800px and larger */
     }
+
 }
 .logout-btn {
     background-color: #ff5722;
@@ -27,4 +28,18 @@
 
 .logout-btn:hover {
     background-color: #e64a19;
+}
+.edit-btn {
+    background-color: #22c0ff;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-right: 5px;
+}
+
+.edit-btn:hover {
+    background-color: #19e6e6;
 }

@@ -24,20 +24,27 @@ exports.createExpenseList = async (req, res) => {
 exports.fetchExpenseListsByHouse = async (req, res) => {
   try {
     const { houseId } = req.params;
-    const expenseLists = await ExpenseList.find({ houseId }).lean();
-    res.status(200).json(expenseLists);
+    const expenseLists = await ExpenseList.find({ houseId }).select('title _id').lean(); // Select title and _id
+    res.status(200).json(expenseLists); // Send the expense lists with title and _id
   } catch (error) {
     res.status(500).json({ error: 'Error fetching expense lists', details: error.message });
   }
 };
 
-// Fetch list by ID and populate expenses
+// Controller to fetch expense list by ID and populate expenses
 exports.fetchExpenseListById = async (req, res) => {
   try {
-    const { expenseListId } = req.params; // Correctly destructure the ID from params
-    // Use populate to get the related expenses
+    const { expenseListId } = req.params;
+
+    // Fetch the expense list and populate the expenses with the `paidBy` user details
     const expenseList = await ExpenseList.findById(expenseListId)
-      .populate('expenses') // Assuming 'expenses' is the field that stores the expense IDs
+      .populate({
+        path: 'expenses',
+        populate: {
+          path: 'paidBy',  // Populate the paidBy field with user details
+          select: 'name profilePic'  // Select only name and profilePic fields from User model
+        }
+      })
       .lean();
 
     if (!expenseList) {

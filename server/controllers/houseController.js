@@ -58,7 +58,7 @@ exports.getHouseDetails = async (req, res) => {
     const { houseId } = req.params;
     // console.log(houseId);
     const house = await House.findById(houseId)
-    .populate('members', 'name totalPaid owes owned')
+    .populate('members', 'name totalPaid owes owned profilePic')
     .lean();
   
     if (!house) {
@@ -108,3 +108,34 @@ console.log('User ID:', userId);
   }
 };
 
+exports.clearBalance = async (req, res) => {
+  const { houseId } = req.params;
+  try {
+    const house = await House.findById(houseId);
+    if (!house) {
+      return res.status(404).json({ error: 'House not found' });
+    }
+
+    // Mark all current expense lists as cleared
+    house.expenseLists.forEach(expenseList => {
+      expenseList.endDate = new Date(); // Mark the current list as cleared
+    });
+
+    // Create a new expense list
+    const newExpenseList = new ExpenseList({
+      houseId: house._id,
+      title: 'expenselist1',
+      startDate: Date.now(),
+    });
+    await newExpenseList.save();
+
+    // Attach the new expense list to the house
+    house.expenseLists.push(newExpenseList._id);
+    await house.save();
+
+    res.status(200).json({ message: 'Balances cleared and new expense list created successfully' });
+  } catch (error) {
+    console.error('Error clearing balances:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

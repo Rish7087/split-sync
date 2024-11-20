@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const Expense = require('../models/expense'); // Ensure this path is correct
-const { cloudinary } = require('../cloudConfig');
+const { cloudinary, storage } = require('../cloudConfig'); // Import Cloudinary and storage configuration
 
 // Fetch all users
 exports.fetchAll = async (req, res) => {
@@ -29,7 +29,8 @@ exports.getUserData = async (req, res) => {
       _id: userId,
       name: user.name,
       totalSpent: totalExpenses,
-      expenses: expenses
+      expenses: expenses,
+      profilePic: user.profilePic || null,  
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
@@ -43,9 +44,17 @@ exports.updateUser = async (req, res) => {
 
   try {
     if (req.file) {
-      updates.profilePic = req.file.path;
+      // Upload the file to Cloudinary
+      const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'user-profile',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
+      });
+
+      // Add the Cloudinary URL to the updates
+      updates.profilePic = uploadResponse.secure_url; // Store the secure URL of the uploaded image
     }
 
+    // Update the user in the database with the new data
     const updatedUser = await User.findByIdAndUpdate(userId, updates, {
       new: true,
       runValidators: true,
@@ -60,9 +69,11 @@ exports.updateUser = async (req, res) => {
       user: updatedUser,
     });
   } catch (error) {
+    console.error('Error during user update:', error);
     res.status(500).json({ error: 'Failed to update user' });
   }
 };
+
 // Fetch user houses
 exports.getUserHouses = async (req, res) => {
   const userId = req.params.id;
