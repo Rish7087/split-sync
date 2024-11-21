@@ -6,7 +6,7 @@ const User = require('./models/user'); // Adjust path if necessary
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://split-buddies.onrender.com/auth/google/callback' // Correct callback URL for backend
+  callbackURL: process.env.CALLBACK_URI // Correct callback URL for backend
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     // Check if a user with this Google ID already exists

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
   Button,
@@ -18,29 +17,22 @@ import {
   MenuItem,
   Collapse,
   Box,
-  IconButton,
 } from "@mui/material";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import AddHouseMembers from "../components/AddHouseMember";
 import AddExpenseModal from "../components/AddExpenseModal";
+import apiClient from "../components/apiClient"; // API client instance
+import { useUser } from "../../context/UserContext"; // Import UserContext
+import ButtonMenu from "../components/ButtonMenu";
 
 const HouseDetails = () => {
   const { houseId } = useParams();
+  const { user: currentUser } = useUser(); // Access current user from UserContext
   const [house, setHouse] = useState(null);
   const [allExpenses, setAllExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [expenseLists, setExpenseLists] = useState([]);
   const [selectedExpenseList, setSelectedExpenseList] = useState(null);
   const [openRows, setOpenRows] = useState({});
-
-  useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-    }
-  }, []);
 
   useEffect(() => {
     fetchHouseDetails();
@@ -48,9 +40,7 @@ const HouseDetails = () => {
 
   const fetchHouseDetails = async () => {
     try {
-      const response = await axios.get(
-        `https://split-buddies.onrender.com/house/${houseId}`
-      );
+      const response = await apiClient.get(`/house/${houseId}`);
       if (response.data) {
         setHouse(response.data);
         const recentExpenseListId =
@@ -67,17 +57,15 @@ const HouseDetails = () => {
     }
   };
 
-  const handleSelectExpenseList = (event) => {
+  const handleSelectExpenseList = async (event) => {
     const expenseListId = event.target.value;
     setSelectedExpenseList(expenseListId);
-    fetchExpenses(expenseListId);
+    await fetchExpenses(expenseListId);
   };
 
   const fetchExpenses = async (expenseListId) => {
     try {
-      const response = await axios.get(
-        `https://split-buddies.onrender.com/expenselist/fetch/${expenseListId}`
-      );
+      const response = await apiClient.get(`/expenselist/fetch/${expenseListId}`);
       setAllExpenses(response.data.expenses || []);
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -87,7 +75,7 @@ const HouseDetails = () => {
   const calculateUserBalances = (expenses, members) => {
     const totalExpenses = {};
     const memberCount = members.length;
-  
+
     members.forEach((member) => {
       totalExpenses[member._id] = {
         totalPaid: 0,
@@ -95,7 +83,7 @@ const HouseDetails = () => {
         profilePic: member.profilePic,
       };
     });
-  
+
     expenses.forEach((expense) => {
       const paidBy = expense.paidBy._id;
       const total = expense.total;
@@ -103,18 +91,18 @@ const HouseDetails = () => {
         totalExpenses[paidBy].totalPaid += total;
       }
     });
-  
+
     const totalPaid = Object.values(totalExpenses).reduce(
       (sum, member) => sum + member.totalPaid,
       0
     );
-  
+
     const avgExpense = memberCount ? totalPaid / memberCount : 0;
-  
+
     return members.map((member) => {
       const paid = totalExpenses[member._id]?.totalPaid || 0;
       const owed = avgExpense - paid;
-  
+
       return {
         ...member,
         totalPaid: paid,
@@ -133,7 +121,7 @@ const HouseDetails = () => {
 
   const handleClearBalances = async () => {
     try {
-      await axios.post(`https://split-buddies.onrender.com/house/${houseId}/clear-expenses`);
+      await apiClient.post(`/house/${houseId}/clear-expenses`);
       refreshHouseDetails();
     } catch (error) {
       console.error("Error clearing balances:", error);
@@ -152,8 +140,6 @@ const HouseDetails = () => {
   }
 
   const userBalances = calculateUserBalances(allExpenses, house.members);
-
-  // Calculate the total paid and average expense for display
   const totalPaid = userBalances.reduce((sum, member) => sum + member.totalPaid, 0);
   const avgExpense = totalPaid / house.members.length;
 
@@ -166,7 +152,7 @@ const HouseDetails = () => {
       <Typography variant="body1" style={{ marginTop: "10px" }}>
         Number of Members: {house.members.length}
       </Typography>
-
+<ButtonMenu/>
       <FormControl fullWidth style={{ marginTop: "20px" }}>
         <InputLabel>Expense List</InputLabel>
         <Select value={selectedExpenseList} onChange={handleSelectExpenseList}>
@@ -196,124 +182,115 @@ const HouseDetails = () => {
         />
       )}
 
-      {/* Paper Row for displaying Total Paid and Average Expense */}
       <Paper elevation={1} style={{ marginTop: "20px", padding: "15px" }}>
         <Typography variant="h6">Total Paid: ₹{totalPaid.toFixed(2)}</Typography>
         <Typography variant="h6">Average Expense: ₹{avgExpense.toFixed(2)}</Typography>
       </Paper>
 
       <TableContainer component={Paper} style={{ marginTop: "20px" }}>
-  <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell />
-        <TableCell>Date</TableCell>
-        <TableCell>Title</TableCell>
-        <TableCell>Total</TableCell>
-        <TableCell>Paid By</TableCell>
-        <TableCell>Actions</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {allExpenses.map((expense) => (
-        <React.Fragment key={expense._id}>
-          <TableRow>
-            <TableCell />
-            <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
-            <TableCell>{expense.title}</TableCell>
-            <TableCell>₹{expense.total.toFixed(2)}</TableCell>
-            <TableCell>
-              <Avatar src={expense.paidBy.profilePic} />
-              {expense.paidBy.name}
-            </TableCell>
-            <TableCell>
-              {/* This button is moved below to show after other columns */}
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => toggleRowOpen(expense._id)}
-              >
-                {openRows[expense._id] ? "Hide Items" : "View Items"}
-              </Button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell colSpan={6} style={{ paddingBottom: 0, paddingTop: 0 }}>
-              <Collapse in={openRows[expense._id]} timeout="auto" unmountOnExit>
-                <Box margin={2}>
-                  <Typography variant="subtitle1">Items:</Typography>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Item Name</TableCell>
-                        <TableCell>Cost</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {expense.items?.map((item) => (
-                        <TableRow key={item._id}>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>₹{item.price?.toFixed(2)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </Box>
-              </Collapse>
-            </TableCell>
-          </TableRow>
-        </React.Fragment>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>Date</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Total</TableCell>
+              <TableCell>Paid By</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {allExpenses.map((expense) => (
+              <React.Fragment key={expense._id}>
+                <TableRow>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => toggleRowOpen(expense._id)}
+                    >
+                      {openRows[expense._id] ? "Hide Items" : "View Items"}
+                    </Button>
+                  </TableCell>
+                  <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{expense.title}</TableCell>
+                  <TableCell>₹{expense.total.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Avatar src={expense.paidBy.profilePic} />
+                    {expense.paidBy.name}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <Collapse in={openRows[expense._id]} timeout="auto" unmountOnExit>
+                      <Box margin={2}>
+                        <Typography variant="subtitle1">Items:</Typography>
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Item Name</TableCell>
+                              <TableCell>Cost</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {expense.items?.map((item) => (
+                              <TableRow key={item._id}>
+                                <TableCell>{item.name}</TableCell>
+                                <TableCell>₹{item.price?.toFixed(2)}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
+      <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Member</TableCell>
+              <TableCell>Total Paid</TableCell>
+              <TableCell>Balance</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {userBalances.map((member) => (
+              <TableRow key={member._id}>
+                <TableCell>
+                  <Avatar src={member.profilePic} />
+                  {member.name}
+                </TableCell>
+                <TableCell>₹{member.totalPaid.toFixed(2)}</TableCell>
+                <TableCell
+                  style={{
+                    color: member.balance > 0 ? "red" : "green",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {member.balance > 0
+                    ? `Owes ₹${member.balance.toFixed(2)}`
+                    : `Gets ₹${Math.abs(member.balance).toFixed(2)}`}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* User Balances Table */}
-<TableContainer component={Paper} style={{ marginTop: "20px" }}>
-  <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell>Member</TableCell>
-        <TableCell>Total Paid</TableCell>
-        <TableCell>Balance</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {userBalances.map((member) => (
-        <TableRow key={member._id}>
-          <TableCell>
-            {/* {console.log(member.profilePic)} */}
-            <Avatar src={member.profilePic} />
-            {member.name}
-          </TableCell>
-          <TableCell>₹{member.totalPaid.toFixed(2)}</TableCell>
-          <TableCell
-            style={{
-              color: member.balance > 0 ? "red" : "green",
-              fontWeight: "bold",
-            }}
-          >
-            {member.balance > 0
-              ? `Owned: ₹${member.balance.toFixed(2)}`
-              : `Owes: ₹${Math.abs(member.balance).toFixed(2)}`}
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
-
-
-      {/* Admin Controls */}
-      {currentUser && house.admin === currentUser._id && (
+      {currentUser?._id === house.admin?._id && (
         <Button
-          variant="outlined"
+          variant="contained"
           color="secondary"
           onClick={handleClearBalances}
           style={{ marginTop: "20px" }}
         >
-          Clear Balances & Start New Expense List
+          Clear Balances
         </Button>
       )}
     </Paper>

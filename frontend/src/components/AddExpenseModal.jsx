@@ -1,50 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getUserFromCookie } from '../utils/cookieUtils'; // Utility function for fetching user
+import { useUser } from '../../context/UserContext';  // Import useUser from UserContext
+import apiClient from '../components/apiClient'; // Assuming you've created an apiClient for API calls
 
-const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => { // Accept expenseListId prop
+const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
   const [title, setTitle] = useState('');
   const [items, setItems] = useState([{ name: '', price: '' }]);
   const [note, setNote] = useState('');
   const [total, setTotal] = useState(0); // Initialize total state
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
+  
+  // Get current user from context
+  const { currentUser } = useUser(); 
 
-  // Get current user from session storage
+  // Calculate total whenever items change
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-    } else {
-      console.error("User not found in session storage");
-    }
-  }, []);
-
-  // Fetch items for autocomplete suggestions asynchronously (optional if required)
-  const fetchItemOptions = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('https://split-buddies.onrender.com/items'); // API for fetching items (optional)
-      // itemOptions is not used in this example
-    } catch (error) {
-      console.error('Error fetching item options:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load item options on open (optional)
-  useEffect(() => {
-    if (open) {
-      fetchItemOptions();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    // Calculate total whenever items change
     const newTotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
     setTotal(newTotal);
   }, [items]);
@@ -67,12 +39,12 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userData || !userData._id) {
+    if (!currentUser?._id) {
       console.error("User data is not available yet");
       return;
     }
 
-    const userId = userData._id;
+    const userId = currentUser._id;  // Get current user ID from context
     // Validate title, total, and item prices
     if (!title.trim()) {
       alert('Title is required');
@@ -88,13 +60,10 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
     }
 
     try {
-      const user = getUserFromCookie('currentUser'); // Fetch current user
-      const paidBy = userId; // Use user ID for "paid by"
-
       const expenseData = {
         title,
         total,
-        paidBy,
+        paidBy: userId,  // Use user ID for "paid by"
         items: items.map((item) => ({
           name: item.name,
           price: parseFloat(item.price),
@@ -105,7 +74,8 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
 
       console.log('Submitting expense data:', expenseData); // Debug log
 
-      await axios.post(`https://split-buddies.onrender.com/expenses/add`, expenseData); // Post to specific expense list
+      // Use apiClient to make the POST request
+      await apiClient.post(`/expenses/add`, expenseData);
       refreshExpenses(); // Refresh the expenses to reflect changes
       onClose(); // Close the modal
     } catch (error) {
