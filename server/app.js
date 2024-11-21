@@ -28,10 +28,25 @@ async function main() {
 
 main();
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://splitsyncc.netlify.app'
+];
+
 // Middleware configuration
+// app.use(cors({
+//   origin: process.env.CLIENT_URL,
+//   credentials: true
+// }));
 app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true // Allow cookies
 }));
 
 app.use(express.urlencoded({ extended: true }));
