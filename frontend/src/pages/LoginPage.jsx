@@ -3,34 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
     window.location.href = 'https://split-buddies.onrender.com/auth/google'; // Redirect to backend for Google login
   };
 
-  useEffect(() => {
-    // Check if user is already logged in
-    axios
-      .get('https://split-buddies.onrender.com/auth/user', { withCredentials: true })
-      .then((response) => {
-        const { user, isNewUser } = response.data;
-        if (user) {
-          if (isNewUser) {
-            navigate('/signup'); // Redirect to signup page if the user is new
-          } else {
-            navigate('/home'); // Redirect to home page if the user is existing
-          }
-        }
-      })
-      .catch((error) => {
-        if (error.response?.status === 401) {
-          console.log('User not authenticated, showing login page.');
-        } else {
-          console.error('Error fetching user data:', error);
-        }
-      });
-  }, [navigate]);
+  // useEffect(() => {
+  //   // Check if user is already logged in
+  //   axios
+  //     .get('https://split-buddies.onrender.com/auth/user', { withCredentials: true })
+  //     .then((response) => {
+  //       const { user, isNewUser } = response.data;
+  //       if (user) {
+  //         if (isNewUser) {
+  //           navigate('/signup'); // Redirect to signup page if the user is new
+  //         } else {
+  //           navigate('/home'); // Redirect to home page if the user is existing
+  //         }
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       if (error.response?.status === 401) {
+  //         console.log('User not authenticated, showing login page.');
+  //       } else {
+  //         console.error('Error fetching user data:', error);
+  //       }
+  //     });
+  // }, [navigate]);
 
   return (
     <div

@@ -3,6 +3,7 @@ const User = require('../models/user');
 // Google auth callback
 exports.googleCallback = (req, res) => {
   if (!req.user) {
+    console.log("login failed! --- req: ",req)
     return res.redirect(`${process.env.CLIENT_URL}/login`);
   }
   
