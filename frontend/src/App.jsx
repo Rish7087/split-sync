@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import HouseDetails from "./pages/HouseDetails";
 
 function App() {
+  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
   const [user, setUser] = useState(() => {
     // Retrieve user from sessionStorage if available
     const storedUser = sessionStorage.getItem("user");
@@ -21,7 +22,7 @@ function App() {
     // Fetch logged-in user data if not already available in session storage
     if (!user) {
       axios
-        .get("http://localhost:8080/auth/user", { withCredentials: true })
+        .get(`${SERVER_URL}/auth/user`, { withCredentials: true })
         .then((response) => {
           if (response.data.user) {
             setUser(response.data.user);
