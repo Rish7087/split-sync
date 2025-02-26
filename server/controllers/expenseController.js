@@ -6,7 +6,7 @@ const User = require('../models/user'); // Ensure this is your User model
 exports.addExpense = async (req, res) => {
   console.log("Add expense request received");
   try {
-    console.log("Trying to add expense");
+    // console.log("Trying to add expense");
     
     const { title, total, paidBy, items, note, expenseListId, houseId, roomId } = req.body;
     

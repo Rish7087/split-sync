@@ -12,6 +12,8 @@ import EditProfileModal from './EditProfileModal'; // Import your modal componen
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL; // Use environment variable
+
 export default function ButtonMenu({ user, refreshUserData }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -29,7 +31,7 @@ export default function ButtonMenu({ user, refreshUserData }) {
 
   const handleLogout = () => {
     axios
-      .get("http://localhost:8080/auth/logout", { withCredentials: true })
+      .get(`${SERVER_URL}/auth/logout`, { withCredentials: true })
       .then(() => {
         sessionStorage.removeItem("user");
         navigate("/login");

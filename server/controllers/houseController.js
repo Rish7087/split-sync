@@ -2,6 +2,18 @@ const House = require('../models/house');
 const User = require('../models/user');
 const ExpenseList = require('../models/expenseList');
 
+
+//fetch expense lists
+exports.fetchExpenseLists = async (req, res) => {
+  try {
+    const { houseId } = req.params;
+    const expenseLists = await ExpenseList.find({ houseId }).select("_id title"); // Fetch ID and Title
+    res.json(expenseLists);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching expense lists", details: error.message });
+  }
+};
+
 // Controller to create a house
 exports.createHouse = async (req, res) => {
   const { name, userId } = req.body;
@@ -110,6 +122,7 @@ console.log('User ID:', userId);
 
 exports.clearBalance = async (req, res) => {
   const { houseId } = req.params;
+  const { title } = req.body; 
   try {
     const house = await House.findById(houseId);
     if (!house) {
@@ -124,7 +137,7 @@ exports.clearBalance = async (req, res) => {
     // Create a new expense list
     const newExpenseList = new ExpenseList({
       houseId: house._id,
-      title: 'expenselist1',
+      title: title,
       startDate: Date.now(),
     });
     await newExpenseList.save();
@@ -133,7 +146,7 @@ exports.clearBalance = async (req, res) => {
     house.expenseLists.push(newExpenseList._id);
     await house.save();
 
-    res.status(200).json({ message: 'Balances cleared and new expense list created successfully' });
+    res.status(201).json({ message: 'Balances cleared and new expense list created successfully' });
   } catch (error) {
     console.error('Error clearing balances:', error);
     res.status(500).json({ error: 'Internal server error' });

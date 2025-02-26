@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Avatar } from "@mui/material";
 import axios from "axios";
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL; // Use environment variable
+
 const EditProfileModal = ({ open, onClose, userId, refreshUserData }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -12,10 +14,9 @@ const EditProfileModal = ({ open, onClose, userId, refreshUserData }) => {
 
   useEffect(() => {
     if (userId) {
-      // Fetch current user data when the modal opens
       const fetchUserData = async () => {
         try {
-          const response = await axios.get(`http://localhost:8080/user/${userId}/data`);
+          const response = await axios.get(`${SERVER_URL}/user/${userId}/data`, { withCredentials: true });
           setFormData({
             name: response.data.name,
             profilePic: response.data.img || null,
@@ -33,7 +34,7 @@ const EditProfileModal = ({ open, onClose, userId, refreshUserData }) => {
     if (name === "profilePic") {
       const file = files[0];
       setFormData((prev) => ({ ...prev, profilePic: file }));
-      setPreview(URL.createObjectURL(file)); // Set preview image
+      setPreview(URL.createObjectURL(file));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -48,13 +49,13 @@ const EditProfileModal = ({ open, onClose, userId, refreshUserData }) => {
         form.append("profilePic", formData.profilePic, fileName);
       }
 
-      // Send the updated profile data to the backend
-      await axios.put(`http://localhost:8080/user/${userId}/update`, form, {
+      await axios.put(`${SERVER_URL}/user/${userId}/update`, form, {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       });
 
-      refreshUserData(); // Refresh the homepage data after saving
-      onClose(); // Close the modal
+      refreshUserData();
+      onClose();
     } catch (error) {
       console.error("Error updating profile:", error);
     }

@@ -3,13 +3,15 @@ import axios from 'axios';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getUserFromCookie } from '../utils/cookieUtils'; // Utility function for fetching user
+import { getUserFromCookie } from '../utils/cookieUtils';
 
-const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => { // Accept expenseListId prop
+const SERVER_URL = import.meta.env.VITE_SERVER_URL; // Use environment variable
+
+const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
   const [title, setTitle] = useState('');
   const [items, setItems] = useState([{ name: '', price: '' }]);
   const [note, setNote] = useState('');
-  const [total, setTotal] = useState(0); // Initialize total state
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState(null);
 
@@ -23,12 +25,12 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
     }
   }, []);
 
-  // Fetch items for autocomplete suggestions asynchronously (optional if required)
+  // Fetch items for autocomplete suggestions (if required)
   const fetchItemOptions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/items'); // API for fetching items (optional)
-      // itemOptions is not used in this example
+      const response = await axios.get(`${SERVER_URL}/items`); // API for fetching items
+      console.log("Fetched item options:", response.data); // Debugging
     } catch (error) {
       console.error('Error fetching item options:', error);
     } finally {
@@ -36,7 +38,6 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
     }
   };
 
-  // Load item options on open (optional)
   useEffect(() => {
     if (open) {
       fetchItemOptions();
@@ -72,8 +73,6 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
       return;
     }
 
-    const userId = userData._id;
-    // Validate title, total, and item prices
     if (!title.trim()) {
       alert('Title is required');
       return;
@@ -88,8 +87,8 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
     }
 
     try {
-      const user = getUserFromCookie('currentUser'); // Fetch current user
-      const paidBy = userId; // Use user ID for "paid by"
+      const user = getUserFromCookie('currentUser');
+      const paidBy = userData._id;
 
       const expenseData = {
         title,
@@ -100,19 +99,20 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
           price: parseFloat(item.price),
         })),
         note,
-        expenseListId, // Attach expense to the current expense list
+        expenseListId,
       };
 
-      console.log('Submitting expense data:', expenseData); // Debug log
+      console.log('Submitting expense data:', expenseData); // Debugging
 
-      await axios.post(`http://localhost:8080/expenses/add`, expenseData); // Post to specific expense list
-      refreshExpenses(); // Refresh the expenses to reflect changes
-      onClose(); // Close the modal
+      await axios.post(`${SERVER_URL}/expenses/add`, expenseData); // Use env variable
+
+      refreshExpenses();
+      onClose();
     } catch (error) {
       console.error('Error adding expense:', error);
     }
-  };
-
+  }
+  
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Add Expense</DialogTitle>

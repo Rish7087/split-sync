@@ -1,13 +1,19 @@
 .header {
-    text-align: center;
-    background-color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    backdrop-filter: blur(5px);
+    padding: 10px 0; /* Adjust padding */
+    margin-bottom: 10px ;
+    border-radius: 20px;
 }
 
 .header img {
-    width: 100%; /* Default to 100% for small screens */
+    width: 100px; /* Set logo size */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 150px; /* Prevent it from getting too large */
 }
 
 @media only screen and (min-width: 800px) {
