@@ -39,14 +39,25 @@ app.use(express.json());
 console.log("Mongo URI from env:", process.env.MONGO_URI);
 
 // Session middleware
-app.use(session({
+// app.use(session({
     
-  secret: process.env.SESSION_SECRET || 'your_secret_key', // Use environment variable for secret
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({ mongoUrl: mongo_URI })
-}));
-
+//   secret: process.env.SESSION_SECRET || 'your_secret_key', // Use environment variable for secret
+//   resave: false,
+//   saveUninitialized: true,
+//   store: MongoStore.create({ mongoUrl: mongo_URI })
+// }));
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
+    resave: false,
+    saveUninitialized: false, // 🔥 Prevent unnecessary session creation
+    store: MongoStore.create({ mongoUrl: mongo_URI }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Secure only in production
+      httpOnly: true,
+      sameSite: "lax" // Ensure it works cross-site
+    }
+  }));
+  
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
