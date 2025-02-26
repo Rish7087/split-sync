@@ -14,12 +14,12 @@ const passport = require('passport');
 require('dotenv').config();  // Load environment variables
 require('./passportConfig'); // Import passport configuration
 
-const mongo_URI = process.env.mongo_URI;
+const mongo_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 8080; // Default to port 8080 if not set
 
 async function main() {
     try {
-        await mongoose.connect(mongo_URI);
+        await mongoose.connect(MONGO_URI);
         console.log("Connected to Database!");
     } catch (error) {
         console.error("Error connecting to Database:", error);
@@ -45,7 +45,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'your_secret_key', // Use environment variable for secret
   resave: false,
   saveUninitialized: true,
-  store: MongoStore.create({ mongoUrl: mongo_URI })
+  store: MongoStore.create({ mongoUrl: MONGO_URI })
 }));
 
 // Passport middleware
