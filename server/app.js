@@ -37,8 +37,11 @@ app.use(cors({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+console.log("Mongo URI from env:", process.env.MONGO_URI);
+
 // Session middleware
 app.use(session({
+    
   secret: process.env.SESSION_SECRET || 'your_secret_key', // Use environment variable for secret
   resave: false,
   saveUninitialized: true,
