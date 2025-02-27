@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import HouseList from "../components/HouseList";
 import { Paper } from "@mui/material";
 import ButtonMenu from "../components/ButtonMenu";
@@ -10,7 +9,7 @@ const HomePage = () => {
   const [userData, setUserData] = useState(null);
   
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUserData(JSON.parse(storedUser));
     } else {

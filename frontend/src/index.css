@@ -1,0 +1,149 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+  
+  .glass-card {
+    width: 320px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-card h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .glass-card input {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+  }
+  
+  .glass-btn {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .glass-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  .btn-blue {
+    background-color: aqua;
+    font-weight: bolder;
+  }
+  
+  .error-text {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  
+  .link-btn {
+    background: none;
+    color: cyan;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 1rem;
+  }
+  
+  .link-btn:hover {
+    color: lightblue;
+  }
+  
+  /* Glassmorphic container for HouseDetails */
+.glass-paper {
+  padding: 20px;
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+/* Table container styling */
+.glass-table-container {
+  margin-top: 15px;
+  width: 97%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  overflow: hidden;
+}
+
+/* Sub-paper for user balances */
+.glass-subpaper {
+  margin-top: 20px;
+  width: 90%;
+  max-width: 800px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Admin control button */
+.glass-admin-button {
+  margin-top: 20px;
+  background: rgba(203, 112, 33, 0.09);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-weight: bold;
+  text-transform: none;
+  transition: 0.3s;
+}
+
+.glass-admin-button:hover {
+  background: rgba(207, 131, 17, 0.27);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Table header cell styling */
+.table-header {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.table-header-cell {
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Table row styling */
+.glass-table-row {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.glass-table-cell {
+  color: #fff;
+}

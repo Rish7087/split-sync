@@ -25,15 +25,9 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import {
-  ForkRight,
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-} from "@mui/icons-material";
 import AddHouseMembers from "../components/AddHouseMember";
 import AddExpenseModal from "../components/AddExpenseModal";
 import ButtonMenu from "../components/ButtonMenu";
-import { height } from "@mui/system";
 
 
 
@@ -52,7 +46,7 @@ const HouseDetails = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
@@ -158,14 +152,7 @@ const HouseDetails = () => {
     }
   };
 
-  // const handleClearBalances = async () => {
-  //   try {
-  //     await axios.post(`${SERVER_URL}/house/${houseId}/clear-expenses`);
-  //     refreshHouseDetails();
-  //   } catch (error) {
-  //     console.error("Error clearing balances:", error);
-  //   }
-  // };
+
   const [openDialog, setOpenDialog] = useState(false);
 const [newExpenseListTitle, setNewExpenseListTitle] = useState("");
 
@@ -365,7 +352,7 @@ const handleCloseDialog = () => {
                     }}
                   >
                     <Avatar src={expense.paidBy.profilePic} />
-                    {expense.paidBy.name}
+                    {expense.paidBy.username}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -427,10 +414,15 @@ const handleCloseDialog = () => {
                                 <TableCell sx={{ color: "#fff" }}>
                                   ₹{item.price?.toFixed(2)}
                                 </TableCell>
+
                               </TableRow>
+                              
                             ))}
                           </TableBody>
                         </Table>
+                        <Typography variant="subtitle1" sx={{ color: "#fff" , marginTop: "5px"}}>
+                          Note: {expense.note}
+                        </Typography>
                       </Box>
                     </Collapse>
                   </TableCell>
@@ -484,7 +476,7 @@ const handleCloseDialog = () => {
                   }}
                 >
                   <Avatar src={member.profilePic} />
-                  {member.name}
+                  {member.username}
                 </TableCell>
                 <TableCell sx={{ color: "#fff" }}>
                   ₹{member.totalPaid.toFixed(2)}

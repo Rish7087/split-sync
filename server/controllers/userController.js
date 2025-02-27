@@ -85,7 +85,7 @@ exports.getUserHouses = async (req, res) => {
 
     res.status(200).json({
       _id: userId,
-      name: user.name,
+      name: user.username,
       houses: user.houses ,
     });
   } catch (error) {

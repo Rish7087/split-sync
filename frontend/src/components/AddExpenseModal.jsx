@@ -17,7 +17,7 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
 
   // Get current user from session storage
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUserData(JSON.parse(storedUser));
     } else {
@@ -26,23 +26,23 @@ const AddExpenseModal = ({ open, onClose, refreshExpenses, expenseListId }) => {
   }, []);
 
   // Fetch items for autocomplete suggestions (if required)
-  const fetchItemOptions = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${SERVER_URL}/items`); // API for fetching items
-      console.log("Fetched item options:", response.data); // Debugging
-    } catch (error) {
-      console.error('Error fetching item options:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchItemOptions = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.get(`${SERVER_URL}/items`); // API for fetching items
+  //     console.log("Fetched item options:", response.data); // Debugging
+  //   } catch (error) {
+  //     console.error('Error fetching item options:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (open) {
-      fetchItemOptions();
-    }
-  }, [open]);
+  // useEffect(() => {
+  //   if (open) {
+  //     fetchItemOptions();
+  //   }
+  // }, [open]);
 
   useEffect(() => {
     // Calculate total whenever items change

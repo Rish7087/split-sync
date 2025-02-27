@@ -42,7 +42,7 @@ exports.fetchExpenseListById = async (req, res) => {
         path: 'expenses',
         populate: {
           path: 'paidBy',  // Populate the paidBy field with user details
-          select: 'name profilePic'  // Select only name and profilePic fields from User model
+          select: 'username profilePic'  // Select only name and profilePic fields from User model
         }
       })
       .lean();

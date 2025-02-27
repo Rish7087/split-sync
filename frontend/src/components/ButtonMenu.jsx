@@ -30,18 +30,10 @@ export default function ButtonMenu({ user, refreshUserData }) {
   };
 
   const handleLogout = () => {
-    axios
-      .get(`${SERVER_URL}/auth/logout`, { withCredentials: true })
-      .then(() => {
-        sessionStorage.removeItem("user");
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.error("Logout failed:", error);
-      });
-    handleMenuClose();
+    localStorage.removeItem("user");
+    window.location.href = "/login"; // Redirect to login after logout
   };
-
+  
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>

@@ -70,7 +70,7 @@ exports.getHouseDetails = async (req, res) => {
     const { houseId } = req.params;
     // console.log(houseId);
     const house = await House.findById(houseId)
-    .populate('members', 'name totalPaid owes owned profilePic')
+    .populate('members', 'username totalPaid owes owned profilePic')
     .lean();
   
     if (!house) {
@@ -84,10 +84,10 @@ exports.getHouseDetails = async (req, res) => {
 };
 // In your addHouseMember controller
 exports.addHouseMember = async (req, res) => {
-  const { houseId, email, userId } = req.body;
-  console.log("adding email: ", email);
-  console.log("adding houseId: ", houseId);
-  console.log("adding currentUserId: ", userId);
+  const { houseId, name, userId } = req.body;
+  console.log("Adding member with username:", name);
+  console.log("House ID:", houseId);
+  console.log("Current admin user ID:", userId);
   try {
     // Find the house and check if the current user is the admin
     const house = await House.findById(houseId);
@@ -95,12 +95,13 @@ exports.addHouseMember = async (req, res) => {
       return res.status(404).json({ message: 'House not found' });
     }
     console.log('Admin ID:', house.admin.toString());
-console.log('User ID:', userId);
+    console.log('User ID:', userId);
     if (house.admin.toString() !== userId) {
       return res.status(403).json({ message: 'Only the admin can add members' });
     }
 
-    const user = await User.findOne({ email });
+    // Look for the user by username
+    const user = await User.findOne({ username: name });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
